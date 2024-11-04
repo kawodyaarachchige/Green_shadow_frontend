@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+<div class="app-container">
+    <!-- Mobile Menu Toggle -->
+    <button id="menuToggle" class="menu-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="https://via.placeholder.com/40" alt="Logo" class="logo">
+            <h1>FarmDash</h1>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="#" class="nav-item active" data-section="dashboard">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="#" class="nav-item" data-section="users">
+                <i class="fas fa-users"></i>
+                <span>Users</span>
+            </a>
+            <a href="#" class="nav-item" data-section="vehicles">
+                <i class="fas fa-truck"></i>
+                <span>Vehicles</span>
+            </a>
+            <a href="#" class="nav-item" data-section="equipment">
+                <i class="fas fa-tools"></i>
+                <span>Equipment</span>
+            </a>
+            <a href="#" class="nav-item" data-section="logs">
+                <i class="fas fa-clipboard-list"></i>
+                <span>Logs</span>
+            </a>
+            <a href="#" class="nav-item" data-section="staff">
+                <i class="fas fa-user-tie"></i>
+                <span>Staff</span>
+            </a>
+            <a href="#" class="nav-item" data-section="crops">
+                <i class="fas fa-seedling"></i>
+                <span>Crops</span>
+            </a>
+            <a href="#" class="nav-item" data-section="fields">
+                <i class="fas fa-map-marked-alt"></i>
+                <span>Fields</span>
+            </a>
+        </nav>
+
+        <button class="logout-btn">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+        </button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="top-bar">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search...">
+            </div>
+            <div class="user-menu">
+                <button class="notification-btn">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge">3</span>
+                </button>
+                <div class="user-profile">
+                    <img src="https://via.placeholder.com/32" alt="User">
+                    <span>John Doe</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="dashboard-content">
+            <!-- Weather Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-temperature-high"></i></div>
+                    <div class="stat-details">
+                        <h3>Temperature</h3>
+                        <p class="stat-value">24°C</p>
+                        <span class="stat-status good">Good</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-tint"></i></div>
+                    <div class="stat-details">
+                        <h3>Soil Moisture</h3>
+                        <p class="stat-value">72%</p>
+                        <span class="stat-status warning">High</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-cloud-rain"></i></div>
+                    <div class="stat-details">
+                        <h3>Precipitation</h3>
+                        <p class="stat-value">-2mm</p>
+                        <span class="stat-status info">Low</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Crop Progress -->
+            <div class="crop-progress">
+                <h2>Crop Progress</h2>
+                <div class="progress-grid">
+                    <div class="progress-card">
+                        <div class="progress-info">
+                            <h3>Mango</h3>
+                            <span>45% Growth</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress" style="width: 45%"></div>
+                        </div>
+                    </div>
+                    <div class="progress-card">
+                        <div class="progress-info">
+                            <h3>Pear</h3>
+                            <span>55% Growth</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress" style="width: 55%"></div>
+                        </div>
+                    </div>
+                    <div class="progress-card">
+                        <div class="progress-info">
+                            <h3>Avocado</h3>
+                            <span>94% Growth</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress" style="width: 94%"></div>
+                        </div>
+                    </div>
+                    <div class="progress-card">
+                        <div class="progress-info">
+                            <h3>Carrot</h3>
+                            <span>82% Growth</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress" style="width: 82%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Field Map -->
+            <div class="field-map-container">
+                <div class="field-header">
+                    <h2>Field Overview</h2>
+                    <button class="action-btn">
+                        <i class="fas fa-plus"></i>
+                        Add Field
+                    </button>
+                </div>
+                <div class="field-map">
+                    <canvas id="fieldMap"></canvas>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
