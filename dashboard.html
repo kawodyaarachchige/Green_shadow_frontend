@@ -17,57 +17,56 @@
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <img src="https://via.placeholder.com/40" alt="Logo" class="logo">
-            <h1>FarmDash</h1>
+            <img src="assets/image/logo.png" alt="Logo" class="logo">
+            <h1>Green Shadow</h1>
         </div>
 
         <nav class="sidebar-nav">
-            <a href="#" class="nav-item active" data-section="dashboard">
+            <a href="dashboard.html" class="nav-item active" data-section="dashboard">
                 <i class="fas fa-home"></i>
                 <span>Dashboard</span>
             </a>
-            <a href="#" class="nav-item" data-section="users">
-                <i class="fas fa-users"></i>
-                <span>Users</span>
-            </a>
-            <a href="#" class="nav-item" data-section="vehicles">
-                <i class="fas fa-truck"></i>
-                <span>Vehicles</span>
-            </a>
-            <a href="#" class="nav-item" data-section="equipment">
-                <i class="fas fa-tools"></i>
-                <span>Equipment</span>
-            </a>
-            <a href="#" class="nav-item" data-section="logs">
-                <i class="fas fa-clipboard-list"></i>
-                <span>Logs</span>
-            </a>
-            <a href="#" class="nav-item" data-section="staff">
-                <i class="fas fa-user-tie"></i>
-                <span>Staff</span>
+
+            <a href="field.html" class="nav-item" data-section="fields">
+                <i class="fas fa-map-marked-alt"></i>
+                <span>Fields</span>
             </a>
             <a href="#" class="nav-item" data-section="crops">
                 <i class="fas fa-seedling"></i>
                 <span>Crops</span>
             </a>
-            <a href="#" class="nav-item" data-section="fields">
-                <i class="fas fa-map-marked-alt"></i>
-                <span>Fields</span>
+            <a href="#" class="nav-item" data-section="equipment">
+                <i class="fas fa-tools"></i>
+                <span>Equipment</span>
+            </a>
+            <a href="#" class="nav-item" data-section="staff">
+                <i class="fas fa-user-tie"></i>
+                <span>Staff</span>
+            </a>
+            <a href="#" class="nav-item" data-section="vehicles">
+                <i class="fas fa-truck"></i>
+                <span>Vehicles</span>
+            </a>
+            <a href="#" class="nav-item" data-section="logs">
+                <i class="fas fa-clipboard-list"></i>
+                <span>Logs</span>
             </a>
         </nav>
-
         <button class="logout-btn">
             <i class="fas fa-sign-out-alt"></i>
             <span>Logout</span>
+        </button>
+        <button class="setting-btn">
+            <i class="fas fa-cog"></i>
+            <span>Settings</span>
         </button>
     </aside>
 
     <!-- Main Content -->
     <main class="main-content">
         <header class="top-bar">
-            <div class="search-box">
-                <i class="fas fa-search"></i>
-                <input type="text" placeholder="Search...">
+            <div class="date-time">
+                <span id="currentDate"></span> | <span id="currentTime"></span>
             </div>
             <div class="user-menu">
                 <button class="notification-btn">
@@ -75,8 +74,8 @@
                     <span class="notification-badge">3</span>
                 </button>
                 <div class="user-profile">
-                    <img src="https://via.placeholder.com/32" alt="User">
-                    <span>John Doe</span>
+                    <img src="assets/image/User.png" alt="User">
+                    <span>Tharushi</span>
                 </div>
             </div>
         </header>
@@ -116,7 +115,7 @@
                 <div class="progress-grid">
                     <div class="progress-card">
                         <div class="progress-info">
-                            <h3>Mango</h3>
+                            <h3>Rice</h3>
                             <span>45% Growth</span>
                         </div>
                         <div class="progress-bar">
@@ -125,7 +124,7 @@
                     </div>
                     <div class="progress-card">
                         <div class="progress-info">
-                            <h3>Pear</h3>
+                            <h3>Cowpea</h3>
                             <span>55% Growth</span>
                         </div>
                         <div class="progress-bar">
@@ -134,7 +133,7 @@
                     </div>
                     <div class="progress-card">
                         <div class="progress-info">
-                            <h3>Avocado</h3>
+                            <h3>Chickpea</h3>
                             <span>94% Growth</span>
                         </div>
                         <div class="progress-bar">
@@ -143,7 +142,7 @@
                     </div>
                     <div class="progress-card">
                         <div class="progress-info">
-                            <h3>Carrot</h3>
+                            <h3>Cassava</h3>
                             <span>82% Growth</span>
                         </div>
                         <div class="progress-bar">

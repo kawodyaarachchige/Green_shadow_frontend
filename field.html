@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Field Management</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="assets/style/modal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+<div class="app-container">
+    <button id="menuToggle" class="menu-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="assets/image/logo.png" alt="Logo" class="logo">
+            <h1>Green Shadow</h1>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="dashboard.html" class="nav-item active" data-section="dashboard">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="#" class="nav-item" data-section="fields">
+                <i class="fas fa-map-marked-alt"></i>
+                <span>Fields</span>
+            </a>
+            <a href="#" class="nav-item" data-section="crops">
+                <i class="fas fa-seedling"></i>
+                <span>Crops</span>
+            </a>
+            <a href="#" class="nav-item" data-section="equipment">
+                <i class="fas fa-tools"></i>
+                <span>Equipment</span>
+            </a>
+            <a href="#" class="nav-item" data-section="staff">
+                <i class="fas fa-user-tie"></i>
+                <span>Staff</span>
+            </a>
+            <a href="#" class="nav-item" data-section="vehicles">
+                <i class="fas fa-truck"></i>
+                <span>Vehicles</span>
+            </a>
+            <a href="#" class="nav-item" data-section="logs">
+                <i class="fas fa-clipboard-list"></i>
+                <span>Logs</span>
+            </a>
+        </nav>
+        <button class="logout-btn">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+        </button>
+        <button class="setting-btn">
+            <i class="fas fa-cog"></i>
+            <span>Settings</span>
+        </button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Add Field Management Section -->
+        <div class="field-management">
+            <header class="field-header">
+                <h2>Manage Fields</h2>
+                <div id="dateTime" class="date-time"></div>
+                <button class="action-btn" onclick="openFieldModal()">
+                    <i class="fas fa-plus"></i> Add Field
+                </button>
+            </header>
+
+            <!-- Field List -->
+            <div class="field-list">
+                <table class="field-table">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Location</th>
+                        <th>Extent Size</th>
+                        <th>Log</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody id="fieldTableBody">
+                    <!-- Rows will be dynamically inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Add/Edit Field Modal -->
+        <div class="modal" id="fieldModal">
+            <div class="modal-content">
+                <span class="close-btn" onclick="closeFieldModal()">&times;</span>
+                <h2 id="modalTitle">Add Field</h2>
+                <form id="fieldForm" onsubmit="handleFieldFormSubmit(event)">
+                    <input type="hidden" id="fieldId">
+                    <div class="form-group">
+                        <label for="fieldName">Field Name</label>
+                        <input type="text" id="fieldName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="fieldLocation">Location</label>
+                        <input type="text" id="fieldLocation" required placeholder="Point data type (e.g., 45.5, 75.5)">
+                    </div>
+                    <div class="form-group">
+                        <label for="fieldSize">Extent Size</label>
+                        <input type="number" id="fieldSize" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="fieldLog">Log</label>
+                        <textarea id="fieldLog" required></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn">Save Field</button>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
