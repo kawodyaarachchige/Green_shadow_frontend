@@ -293,12 +293,7 @@ body {
     cursor: pointer;
 }
 
-/* Field Map Canvas */
-.field-map {
-    height: 300px;
-    border-radius: var(--border-radius);
-    overflow: hidden;
-}
+
 
 .top-bar .date-time {
     font-size: 0.9em;

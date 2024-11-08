@@ -4,9 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Field Management</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="assets/style/modal.css">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../assets/style/modal.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+
+
 </head>
 <body>
 <div class="app-container">
@@ -16,12 +20,12 @@
 
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <img src="assets/image/logo.png" alt="Logo" class="logo">
+            <img src="../assets/image/logo.png" alt="Logo" class="logo">
             <h1>Green Shadow</h1>
         </div>
 
         <nav class="sidebar-nav">
-            <a href="dashboard.html" class="nav-item active" data-section="dashboard">
+            <a href="../dashboard/dashboard.html" class="nav-item active" data-section="dashboard">
                 <i class="fas fa-home"></i>
                 <span>Dashboard</span>
             </a>
@@ -105,8 +109,9 @@
                         <input type="text" id="fieldName" required>
                     </div>
                     <div class="form-group">
-                        <label for="fieldLocation">Location</label>
-                        <input type="text" id="fieldLocation" required placeholder="Point data type (e.g., 45.5, 75.5)">
+                        <label for="location">Select Location</label>
+                        <div id="map" style="height: 300px; border-radius: 8px; margin-bottom: 15px;"></div>
+                        <input type="text" id="location" placeholder="Location" readonly>
                     </div>
                     <div class="form-group">
                         <label for="fieldSize">Extent Size</label>
@@ -120,9 +125,13 @@
                 </form>
             </div>
         </div>
+
     </main>
 </div>
+<script src="../script.js"></script>
+<script src="field.js"></script>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
-<script src="script.js"></script>
+
 </body>
 </html>
