@@ -7,29 +7,23 @@
     <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="../assets/style/modal.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-
-
-
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 </head>
 <body>
 <div class="app-container">
     <button id="menuToggle" class="menu-toggle">
         <i class="fas fa-bars"></i>
     </button>
-
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <img src="../assets/image/logo.png" alt="Logo" class="logo">
             <h1>Green Shadow</h1>
         </div>
-
         <nav class="sidebar-nav">
             <a href="../dashboard/dashboard.html" class="nav-item active" data-section="dashboard">
                 <i class="fas fa-home"></i>
                 <span>Dashboard</span>
             </a>
-
             <a href="#" class="nav-item" data-section="fields">
                 <i class="fas fa-map-marked-alt"></i>
                 <span>Fields</span>
@@ -64,10 +58,7 @@
             <span>Settings</span>
         </button>
     </aside>
-
-    <!-- Main Content -->
     <main class="main-content">
-        <!-- Add Field Management Section -->
         <div class="field-management">
             <header class="field-header">
                 <h2>Manage Fields</h2>
@@ -76,8 +67,10 @@
                     <i class="fas fa-plus"></i> Add Field
                 </button>
             </header>
-
-            <!-- Field List -->
+            <div class="search-bar">
+                <i class="fas fa-search "></i>
+                <input type="text" placeholder="Search fields by location...">
+            </div>
             <div class="field-list">
                 <table class="field-table">
                     <thead>
@@ -91,12 +84,10 @@
                     </tr>
                     </thead>
                     <tbody id="fieldTableBody">
-                    <!-- Rows will be dynamically inserted here -->
                     </tbody>
                 </table>
             </div>
         </div>
-
         <!-- Add/Edit Field Modal -->
         <div class="modal" id="fieldModal">
             <div class="modal-content">
@@ -121,17 +112,42 @@
                         <label for="fieldLog">Log</label>
                         <textarea id="fieldLog" required></textarea>
                     </div>
+                    <div class="form-group">
+                        <label for="fieldImage">Field Image 1</label>
+                        <label for="fieldImage" class="custom-file-upload">Choose Image 1</label>
+                        <input type="file" id="fieldImage" accept="image/*" onchange="previewImage1(event)">
+                        <img id="imagePreview1"
+                             style="display: none; margin-top: 10px; max-width: 100%; border-radius: 8px;">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="fieldImage2">Field Image 2</label>
+                        <label for="fieldImage2" class="custom-file-upload">Choose Image 2</label>
+                        <input type="file" id="fieldImage2" accept="image/*" onchange="previewImage2(event)">
+                        <img id="imagePreview2"
+                             style="display: none; margin-top: 10px; max-width: 100%; border-radius: 8px;">
+                    </div>
                     <button type="submit" class="submit-btn">Save Field</button>
                 </form>
             </div>
         </div>
-
+        <div id="viewMoreModal" class="modal">
+            <div class="modal-content">
+                <span onclick="closeViewMoreModal()" class="close">&times;</span>
+                <h2>Field Details</h2>
+                <p><strong>ID:</strong> <span id="viewFieldId"></span></p>
+                <p><strong>Name:</strong> <span id="viewFieldName"></span></p>
+                <p><strong>Location:</strong> <span id="viewFieldLocation"></span></p>
+                <p><strong>Size:</strong> <span id="viewFieldSize"></span></p>
+                <p><strong>Log:</strong> <span id="viewFieldLog"></span></p>
+                <img id="viewFieldImage1" style="display: none; max-width: 100%; border-radius: 8px; margin-top: 10px;">
+                <img id="viewFieldImage2" style="display: none; max-width: 100%; border-radius: 8px; margin-top: 10px;">
+            </div>
+        </div>
     </main>
 </div>
 <script src="../script.js"></script>
 <script src="field.js"></script>
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-
-
 </body>
 </html>

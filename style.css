@@ -19,7 +19,6 @@
     --sidebar-width: 280px;
 }
 
-
 * {
     margin: 0;
     padding: 0;
@@ -35,8 +34,6 @@ body {
     font-optical-sizing: auto;
     font-weight: 200;
     font-style: normal;
-
-
 }
 
 .app-container {
@@ -44,7 +41,6 @@ body {
     min-height: 100vh;
 }
 
-/* Sidebar Styles */
 .sidebar {
     width: var(--sidebar-width);
     background-color: var(--primary-color);
@@ -57,7 +53,6 @@ body {
     height: 100vh;
     z-index: 10;
 }
-
 .sidebar-header {
     display: flex;
     align-items: center;
@@ -72,7 +67,6 @@ body {
     height: 40px;
     border-radius: 8px;
 }
-
 .sidebar-nav {
     display: flex;
     flex-direction: column;
@@ -90,7 +84,6 @@ body {
     border-radius: var(--border-radius);
     transition: background-color 0.2s ease;
 }
-
 .nav-item:hover {
     background-color: rgba(255, 255, 255, 0.1);
 }
@@ -115,8 +108,6 @@ body {
     background-color: rgba(243, 236, 236, 0.1);
 
 }
-
-/* Main Content Styles */
 .main-content {
     margin-left: var(--sidebar-width);
     flex-grow: 1;
@@ -132,7 +123,6 @@ body {
     width: 100%;
 
 }
-
 .user-menu {
     display: flex;
     align-items: center;
@@ -176,7 +166,6 @@ body {
     gap: var(--spacing-lg);
 }
 
-/* Stats Grid */
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
@@ -293,6 +282,28 @@ body {
     cursor: pointer;
 }
 
+.search-bar {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 6px 8px;
+    max-width: 100%;
+    flex: 1;
+    margin-bottom: 10px;
+}
+
+.search-bar i {
+    color: #aaa;
+    margin-right: 8px;
+}
+
+.search-bar input {
+    border: none;
+    outline: none;
+    width: 100%;
+    font-size: 1rem;
+}
 
 
 .top-bar .date-time {
@@ -318,15 +329,11 @@ body {
     text-align: left;
     border-bottom: 1px solid #ddd;
 }
-
-
 @media (max-width: 1200px) {
     .stats-grid, .progress-grid {
         grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
 
     }
-
-
 }
 
 /* Mobile Styles */
@@ -368,6 +375,7 @@ body {
     .progress-card, .stat-card {
         padding: var(--spacing-sm);
     }
+
     .field-table, .field-table thead, .field-table tbody, .field-table th, .field-table td, .field-table tr {
         display: block;
         width: 100%;
@@ -397,7 +405,6 @@ body {
         display: none;
     }
 
-
 }
 
 @media (max-width: 400px) {
@@ -408,18 +415,5 @@ body {
 }
 
 
-.modal-footer .action-btn {
-    background-color: var(--accent-color);
-    color: white;
-    padding: 0.5rem 1.5rem;
-    border: none;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-.modal-footer .action-btn:hover {
-    background-color: #388e3c;
-}
 
 

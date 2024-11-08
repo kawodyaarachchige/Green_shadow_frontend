@@ -29,14 +29,12 @@ navItems.forEach(item => {
 });
 // Section Change Handler
 function handleSectionChange(section) {
-    // Implement section change logic here
     console.log(`Switching to ${section} section`);
 }
 
 // Logout Handler
 logoutBtn.addEventListener('click', () => {
     if (confirm('Are you sure you want to logout?')) {
-        // Implement logout logic here
         console.log('Logging out...');
     }
 });
