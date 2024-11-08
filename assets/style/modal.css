@@ -54,6 +54,7 @@
 
 .form-group input[type="text"],
 .form-group input[type="number"],
+.form-group select,
 .form-group textarea {
     width: 100%;
     padding: 10px;
@@ -118,7 +119,10 @@
 }
 
 .modal #fieldImage,
-.modal #fieldImage2 {
+.modal #fieldImage2{
+    display: none;
+}
+.modal #cropImage{
     display: none;
 }
 

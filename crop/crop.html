@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop Management</title>
+    <link rel="stylesheet" href="../style.css">
+
+    <link rel="stylesheet" href="../assets/style/modal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+<div class="app-container">
+    <button id="menuToggle" class="menu-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="../assets/image/logo.png" alt="Logo" class="logo">
+            <h1>Green Shadow</h1>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="../dashboard/dashboard.html" class="nav-item active" data-section="dashboard">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="../field/field.html" class="nav-item" data-section="fields">
+                <i class="fas fa-map-marked-alt"></i>
+                <span>Fields</span>
+            </a>
+            <a href="../crop/crop.html" class="nav-item" data-section="crops">
+                <i class="fas fa-seedling"></i>
+                <span>Crops</span>
+            </a>
+            <a href="#" class="nav-item" data-section="equipment">
+                <i class="fas fa-tools"></i>
+                <span>Equipment</span>
+            </a>
+            <a href="#" class="nav-item" data-section="staff">
+                <i class="fas fa-user-tie"></i>
+                <span>Staff</span>
+            </a>
+            <a href="#" class="nav-item" data-section="vehicles">
+                <i class="fas fa-truck"></i>
+                <span>Vehicles</span>
+            </a>
+            <a href="#" class="nav-item" data-section="logs">
+                <i class="fas fa-clipboard-list"></i>
+                <span>Logs</span>
+            </a>
+        </nav>
+        <button class="logout-btn">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+        </button>
+        <button class="setting-btn">
+            <i class="fas fa-cog"></i>
+            <span>Settings</span>
+        </button>
+    </aside>
+    <main class="main-content">
+        <div class="crop-management">
+            <header class="field-header">
+                <h2>Manage Crops</h2>
+                <div id="dateTime" class="date-time"></div>
+                <button class="action-btn" onclick="openCropModal()">
+                    <i class="fas fa-plus"></i> Add Crop
+                </button>
+            </header>
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search crops by name...">
+            </div>
+            <div class="crop-list">
+                <table class="crop-table">
+                    <thead>
+                    <tr>
+                        <th>Crop ID</th>
+                        <th>Special Name</th>
+                        <th>Common Name</th>
+                        <th>Category</th>
+                        <th>Field</th>
+                        <th>Season</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody id="cropTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Add/Edit Crop Modal -->
+        <div class="modal" id="cropModal">
+            <div class="modal-content">
+                <span class="close-btn" onclick="closeCropModal()">&times;</span>
+                <h2 id="modalTitle">Add Crop</h2>
+                <form id="cropForm" onsubmit="handleCropFormSubmit(event)">
+                    <input type="hidden" id="cropId">
+                    <div class="form-group">
+                        <label for="specialName">Special Name</label>
+                        <input type="text" id="specialName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="commonName">Common Name</label>
+                        <input type="text" id="commonName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="category">Category</label>
+                        <input type="text" id="category" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="fieldSelect">Select Field</label>
+                        <select id="fieldSelect" required>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="season">Season</label>
+                        <input type="text" id="season" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="cropImage">Crop Image</label>
+                        <label for="cropImage" class="custom-file-upload">Choose Image</label>
+                        <input type="file" id="cropImage" accept="image/*" onchange="previewCropImage(event)">
+                        <img id="imagePreview" style="display: none; margin-top: 10px; max-width: 100%; border-radius: 8px;">
+                    </div>
+                    <button type="submit" class="submit-btn">Save Crop</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- View Crop Details Modal -->
+        <div id="viewCropModal" class="modal">
+            <div class="modal-content">
+                <span onclick="closeViewCropModal()" class="close">&times;</span>
+                <h2>Crop Details</h2>
+                <p><strong>Crop ID:</strong> <span id="viewCropId"></span></p>
+                <p><strong>Special Name:</strong> <span id="viewSpecialName"></span></p>
+                <p><strong>Common Name:</strong> <span id="viewCommonName"></span></p>
+                <p><strong>Category:</strong> <span id="viewCategory"></span></p>
+                <p><strong>Field:</strong> <span id="viewField"></span></p>
+                <p><strong>Season:</strong> <span id="viewSeason"></span></p>
+                <img id="viewCropImage" style="display: none; max-width: 100%; border-radius: 8px; margin-top: 10px;">
+            </div>
+        </div>
+    </main>
+</div>
+
+<script src="../script.js"></script>
+<script src="crop.js"></script>
+</body>
+</html>
