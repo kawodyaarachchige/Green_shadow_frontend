@@ -266,7 +266,7 @@ body {
     box-shadow: var(--shadow-md);
 }
 
-.field-header {
+.field-header , .equipment-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -314,17 +314,17 @@ body {
     font-weight: bolder;
 }
 
-.field-list , .crop-list {
+.field-list , .crop-list , .equipment-list{
     overflow-x: auto;
     max-width: 100%;
 }
 
-.field-table , .crop-table {
+.field-table , .crop-table, .equipment-table {
     width: 100%;
     border-collapse: collapse;
 }
 
-.field-table th, .field-table td , .crop-table th, .crop-table td {
+.field-table th, .field-table td , .crop-table th, .crop-table td , .equipment-table th, .equipment-table td {
     padding: 12px;
     text-align: left;
     border-bottom: 1px solid #ddd;
@@ -377,24 +377,24 @@ body {
         padding: var(--spacing-sm);
     }
 
-    .field-table, .field-table thead, .field-table tbody, .field-table th, .field-table td, .field-table tr .crop-table, .crop-table thead, .crop-table tbody, .crop-table th, .crop-table td, .crop-table tr {
+    .field-table, .field-table thead, .field-table tbody, .field-table th, .field-table td, .field-table tr .crop-table, .crop-table thead, .crop-table tbody, .crop-table th, .crop-table td, .crop-table tr,.equipment-table, .equipment-table thead, .equipment-table tbody, .equipment-table th, .equipment-table td, .equipment-table tr {
         display: block;
         width: 100%;
     }
 
-    .field-table tr .crop-table tr {
+    .field-table tr .crop-table tr  .equipment-table tr {
         margin-bottom: 15px;
         border: 1px solid #ddd;
         border-radius: 5px;
     }
 
-    .field-table td .crop-table td {
+    .field-table td .crop-table td .equipment-table td {
         padding: 8px;
         text-align: right;
         position: relative;
     }
 
-    .field-table td::before  .crop-table td::before {
+    .field-table td::before  .crop-table td::before .equipment-table td::before {
         content: attr(data-label);
         position: absolute;
         left: 10px;
@@ -402,7 +402,7 @@ body {
         color: #555;
     }
 
-    .field-table th  .crop-table th {
+    .field-table th  .crop-table th  .equipment-table th {
         display: none;
     }
 
