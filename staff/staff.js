@@ -1,7 +1,4 @@
-// Data storage
 let staffData = [];
-
-// Initialize data and event listeners
 document.addEventListener('DOMContentLoaded', () => {
     const token = getCookie("token");
     const userLoggedIn = getCookie("user");
@@ -13,20 +10,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnSaveStaff = document.getElementById("btn-save-staff");
     if (btnSaveStaff) {
         btnSaveStaff.addEventListener("click", () => {
-        if(document.getElementById("staffId").value === "") {
-            saveNewStaff(token);
-        }else {
-            updateStaff(token);
-        }
+            if (document.getElementById("staffId").value === "") {
+                saveNewStaff(token);
+            } else {
+                updateStaff(token);
+            }
 
         });
-
-    displayStaffData();
-    initializeSearch();
+        displayStaffData();
+        initializeSearch();
     }
 
 });
-const  loadLogSelector = (token) => {
+const loadLogSelector = (token) => {
     const logSelector = document.getElementById("logIdStaff");
 
     $.ajax({
@@ -66,7 +62,7 @@ const saveNewStaff = (token) => {
     const email = document.getElementById("email").value;
     const role = document.getElementById("role").value;
     const logCode = document.getElementById("logIdStaff").value;
-    if(!firstName || !lastName || !designation || !gender || !joinedDate || !dob || !addressLine1 || !addressLine2 || !addressLine3 || !addressLine4 || !addressLine5 || !contactNumber || !email || !role) {
+    if (!firstName || !lastName || !designation || !gender || !joinedDate || !dob || !addressLine1 || !addressLine2 || !addressLine3 || !addressLine4 || !addressLine5 || !contactNumber || !email || !role) {
         showNotification("Please fill in all required fields", "error");
     }
 
@@ -126,7 +122,7 @@ const updateStaff = (token) => {
     const role = document.getElementById("role").value;
     const logCode = document.getElementById("logIdStaff").value;
 
-    if(!firstName || !lastName || !designation || !gender || !joinedDate || !dob || !addressLine1 || !addressLine2 || !addressLine3 || !addressLine4 || !addressLine5 || !contactNumber || !email || !role) {
+    if (!firstName || !lastName || !designation || !gender || !joinedDate || !dob || !addressLine1 || !addressLine2 || !addressLine3 || !addressLine4 || !addressLine5 || !contactNumber || !email || !role) {
         showNotification("Please fill in all required fields", "info");
 
     }
@@ -166,8 +162,6 @@ const updateStaff = (token) => {
     });
 }
 
-
-// Initialize search functionality
 function initializeSearch() {
     const searchInput = document.querySelector('.search-bar input');
     searchInput.addEventListener('input', (e) => {
@@ -200,7 +194,6 @@ const loadStaffTable = (token) => {
     });
 }
 
-// Display staff data in table
 function displayStaffData(dataToDisplay = staffData) {
     const tableBody = document.getElementById('staffTableBody');
     tableBody.innerHTML = '';
@@ -234,7 +227,7 @@ function displayStaffData(dataToDisplay = staffData) {
         const editButton = document.createElement("button");
         editButton.className = "action-btn edit-btn";
         editButton.innerHTML = `<i class="fas fa-edit"></i>`;
-        editButton.onclick = () => editStaff(staff.id,staff.firstName,staff.lastName,staff.designation,staff.gender,staff.joinedDate,staff.dob,staff.addressLine1,staff.addressLine2,staff.addressLine3,staff.addressLine4,staff.addressLine5,staff.contactNumber,staff.email,staff.role);
+        editButton.onclick = () => editStaff(staff.id, staff.firstName, staff.lastName, staff.designation, staff.gender, staff.joinedDate, staff.dob, staff.addressLine1, staff.addressLine2, staff.addressLine3, staff.addressLine4, staff.addressLine5, staff.contactNumber, staff.email, staff.role);
 
         const deleteButton = document.createElement("button");
         deleteButton.className = "action-btn delete-btn";
@@ -249,6 +242,7 @@ function displayStaffData(dataToDisplay = staffData) {
         tableBody.appendChild(row);
     });
 }
+
 function deleteStaff(staffId) {
     console.log(staffId)
     const token = getCookie("token");
@@ -269,18 +263,10 @@ function deleteStaff(staffId) {
     });
 }
 
-function editStaff(staffId,firstName,lastName,designation,gender,joinedDate,dob,addressLine1,addressLine2,addressLine3,addressLine4,addressLine5,contactNumber,email,role) {
-    openStaffModal(staffId,firstName,lastName,designation,gender,joinedDate,dob,addressLine1,addressLine2,addressLine3,addressLine4,addressLine5,contactNumber,email,role);
+function editStaff(staffId, firstName, lastName, designation, gender, joinedDate, dob, addressLine1, addressLine2, addressLine3, addressLine4, addressLine5, contactNumber, email, role) {
+    openStaffModal(staffId, firstName, lastName, designation, gender, joinedDate, dob, addressLine1, addressLine2, addressLine3, addressLine4, addressLine5, contactNumber, email, role);
 }
 
-
-// Save data and refresh display
-function saveAndRefresh() {
-    localStorage.setItem('staffData', JSON.stringify(staffData));
-    displayStaffData();
-}
-
-// Modal functions
 function openStaffModal(
     staffId = null,
     firstName = '',
@@ -321,25 +307,17 @@ function openStaffModal(
         document.getElementById('email').value = email;
         document.getElementById('role').value = role;
     } else {
-        // Add new staff
         titleElement.textContent = 'Add New Staff';
-        form.reset(); // Clear the form fields
-        document.getElementById('staffId').value = ''; // Ensure ID field is empty
+        form.reset();
+        document.getElementById('staffId').value = '';
     }
-
-    modal.style.display = 'block'; // Display the modal
+    modal.style.display = 'block';
 }
-
-
-
 function closeStaffModal() {
     document.getElementById('staffModal').style.display = 'none';
 }
 
-// Initialize sidebar toggle functionality
-document.getElementById('menuToggle').addEventListener('click', () => {
-    document.getElementById('sidebar').classList.toggle('collapsed');
-});
+
 
 const clearFields = () => {
     document.getElementById("firstName").value = "";

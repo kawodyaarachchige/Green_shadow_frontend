@@ -91,6 +91,7 @@
                         <th>Fuel Type</th>
                         <th>Status</th>
                         <th>Staff Id</th>
+                        <th>Remark</th>
                         <th>Actions</th>
                     </tr>
                     </thead>
@@ -112,13 +113,22 @@
                     </div>
                     <div class="form-group">
                         <label for="category">Category:</label>
-                        <input type="text" id="category" placeholder="Enter vehicle category" required />
+                        <select id="category" required>
+                            <option value="TRACTOR">Tractor</option>
+                            <option value="VAN">Van</option>
+                            <option value="CAR">Car</option>
+                            <option value="MOTORBIKE">Motor Bike</option>
+                            <option value="LORRY">Lorry</option>
+                            <option value="TRANCKERTRUCK">Trancker Truck</option>
+                            <option value="LANDVEHICLE"> Land Vehicle</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="fuelType">Fuel Type:</label>
                         <select id="fuelType" required>
-                            <option value="Petrol">Petrol</option>
-                            <option value="Diesel">Diesel</option>
+                            <option value="DIESEL">Diesel</option>
+                            <option value="PETROl">Petrol</option>
+                            <option value="ELECTRIC">Electric</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -147,6 +157,7 @@
         </div>
     </main>
 </div>
+<script src="../assets/lib/jquery.min.js"></script>
 <script src="../script.js"></script>
 <script src="vehicle.js"></script>
 </body>

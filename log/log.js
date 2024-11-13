@@ -1,4 +1,3 @@
-// Add this at the top of your file
 let logCounter = 1;
 const logIdMap = new Map();
 
@@ -9,6 +8,7 @@ function getFriendlyLogId(complexLogId) {
     }
     return `LOG-${String(logIdMap.get(complexLogId)).padStart(4, '0')}`;
 }
+
 document.addEventListener('DOMContentLoaded', function () {
     setDefaultDates();
     const token = getCookie("token");
@@ -148,9 +148,7 @@ const loadTable = (token) => {
             "Authorization": `Bearer ${token}`
         },
         success: (data) => {
-            // Store data for filtering
             window.logsData = data;
-            // Sort logs by date before rendering the table
             const sortedData = data.sort((a, b) => new Date(a.logDate) - new Date(b.logDate));
 
             sortedData.forEach((log) => {
@@ -164,7 +162,6 @@ const loadTable = (token) => {
     });
 };
 
-// Create a function to generate log rows
 const createLogRow = (log) => {
     const row = document.createElement("tr");
     const formattedDate = formatLogDate(log.logDate);
@@ -204,6 +201,7 @@ const createLogRow = (log) => {
 
     return row;
 };
+
 function deleteLog(logCode) {
     const token = getCookie("token");
     console.log(logCode)
@@ -299,7 +297,6 @@ const uploadImage = (token) => {
 }
 const filterByDates = (token) => {
     clearTable();
-    // Reset counter when filtering
     logCounter = 1;
     logIdMap.clear();
 
@@ -366,16 +363,14 @@ const filterByDates = (token) => {
     }
 }
 
-// Add search functionality
 document.getElementById("searchInput").addEventListener("input", (e) => {
     const searchTerm = e.target.value.toLowerCase();
     const logTable = document.getElementById("logsTableBody");
 
     logTable.innerHTML = "";
-    logCounter = 1; // Reset counter for consistent numbering
+    logCounter = 1;
     logIdMap.clear();
 
-    // Filter logs based on the search term
     const filteredLogs = window.logsData.filter((log) => {
         const friendlyId = getFriendlyLogId(log.logCode);
         return (
@@ -385,14 +380,11 @@ document.getElementById("searchInput").addEventListener("input", (e) => {
         );
     });
 
-    // Append filtered rows to the table
     filteredLogs.forEach((log) => {
         const row = createLogRow(log);
         logTable.appendChild(row);
     });
 });
-
-
 
 
 const clearTable = () => {
