@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Green Shadow - vehicle management system">
+    <meta name="author" content="Tharu Arachchige">
+    <title>Vehicle Management</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../assets/style/modal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+<div class="app-container">
+    <button id="menuToggle" class="menu-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="../assets/image/logo.png" alt="Logo" class="logo">
+            <h1>Green Shadow</h1>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="../dashboard/dashboard.html" class="nav-item" data-section="dashboard">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="../field/field.html" class="nav-item" data-section="fields">
+                <i class="fas fa-map-marked-alt"></i>
+                <span>Fields</span>
+            </a>
+            <a href="../crop/crop.html" class="nav-item" data-section="crops">
+                <i class="fas fa-seedling"></i>
+                <span>Crops</span>
+            </a>
+            <a href="../equipment/equipment.html" class="nav-item" data-section="equipment">
+                <i class="fas fa-tools"></i>
+                <span>Equipment</span>
+            </a>
+            <a href="#" class="nav-item active" data-section="vehicles">
+                <i class="fas fa-truck"></i>
+                <span>Vehicles</span>
+            </a>
+            <a href="#" class="nav-item" data-section="logs">
+                <i class="fas fa-clipboard-list"></i>
+                <span>Logs</span>
+            </a>
+        </nav>
+        <button class="logout-btn">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+        </button>
+        <button class="setting-btn">
+            <i class="fas fa-cog"></i>
+            <span>Settings</span>
+        </button>
+    </aside>
+    <main class="main-content">
+        <div class="vehicle-management">
+            <header class="vehicle-header">
+                <h2>Manage Vehicles</h2>
+                <div id="dateTime" class="date-time"></div>
+                <button class="action-btn" onclick="openVehicleModal()">
+                    <i class="fas fa-plus"></i> Add Vehicle
+                </button>
+            </header>
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search vehicles by type or status...">
+            </div>
+            <div class="vehicle-list">
+                <table class="vehicle-table">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th>Assigned Field</th>
+                        <th>Assigned Staff</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody id="vehicleTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- Add/Edit Vehicle Modal -->
+        <div class="modal" id="vehicleModal">
+            <div class="modal-content">
+                <span class="close-btn" onclick="closeVehicleModal()">&times;</span>
+                <h2 id="modalTitle">Add Vehicle</h2>
+                <form id="vehicleForm" onsubmit="handleVehicleFormSubmit(event)">
+                    <input type="hidden" id="vehicleId">
+                    <div class="form-group">
+                        <label for="vehicleType">Vehicle Type</label>
+                        <select id="vehicleType" required>
+                            <option value="">Select Type</option>
+                            <option value="Truck">Truck</option>
+                            <option value="Tractor">Tractor</option>
+                            <option value="Harvester">Harvester</option>
+                            <!-- Add more vehicle types as needed -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="vehicleStatus">Status</label>
+                        <select id="vehicleStatus" required>
+                            <option value="">Select Status</option>
+                            <option value="Available">Available</option>
+                            <option value="Not Available">Not Available</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="assignedField">Assigned Field</label>
+                        <input type="text" id="assignedField" placeholder="Enter field ID or name">
+                    </div>
+                    <div class="form-group">
+                        <label for="assignedStaff">Assigned Staff</label>
+                        <input type="text" id="assignedStaff" placeholder="Enter staff ID or name">
+                    </div>
+                    <button type="submit" class="submit-btn">Save Vehicle</button>
+                </form>
+            </div>
+        </div>
+        <div id="viewMoreModal" class="modal">
+            <div class="modal-content">
+                <span onclick="closeViewMoreModal()" class="close">&times;</span>
+                <h2>Vehicle Details</h2>
+                <p><strong>ID:</strong> <span id="viewVehicleId"></span></p>
+                <p><strong>Type:</strong> <span id="viewVehicleType"></span></p>
+                <p><strong>Status:</strong> <span id="viewVehicleStatus"></span></p>
+                <p><strong>Assigned Field:</strong> <span id="viewAssignedField"></span></p>
+                <p><strong>Assigned Staff:</strong> <span id="viewAssignedStaff"></span></p>
+            </div>
+        </div>
+    </main>
+</div>
+<script src="../script.js"></script>
+<script src="vehicle.js"></script>
+</body>
+</html>
