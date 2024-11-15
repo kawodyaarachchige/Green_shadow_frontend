@@ -1,257 +1,413 @@
+// Global variables
 let fields = [];
+let map = null;
+let currentMarker = null;
 
-function closeFieldModal() {
-    document.getElementById('fieldModal').style.display = 'none';
-}
-
+// Initialize the application
 document.addEventListener('DOMContentLoaded', () => {
+    loadFieldsFromStorage();
     renderFields();
     updateDateTime();
+    initializeSearchBar();
+    initializeMenuToggle();
 });
 
+// Menu Toggle Function
+function initializeMenuToggle() {
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+
+    menuToggle.addEventListener('click', () => {
+        sidebar.classList.toggle('active');
+    });
+}
+
+// Local Storage Functions
+function loadFieldsFromStorage() {
+    const storedFields = localStorage.getItem('fields');
+    fields = storedFields ? JSON.parse(storedFields) : [];
+}
+
+function saveFieldsToStorage() {
+    localStorage.setItem('fields', JSON.stringify(fields));
+}
+
+// Modal Functions
+function closeFieldModal() {
+    const modal = document.getElementById('fieldModal');
+    modal.style.display = 'none';
+    if (map) {
+        map.remove();
+        map = null;
+        currentMarker = null;
+    }
+}
+
+function closeViewMoreModal() {
+    const modal = document.getElementById('viewMoreModal');
+    modal.style.display = 'none';
+}
+
+// Image Preview Functions
+function previewImage1(event) {
+    const preview = document.getElementById('imagePreview1');
+    handleImagePreview(event.target.files[0], preview);
+}
+
+function previewImage2(event) {
+    const preview = document.getElementById('imagePreview2');
+    handleImagePreview(event.target.files[0], preview);
+}
+
+function handleImagePreview(file, previewElement) {
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            previewElement.src = e.target.result;
+            previewElement.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+// Field Management Functions
 function handleFieldFormSubmit(event) {
     event.preventDefault();
 
-    const id = document.getElementById('fieldId').value;
-    const name = document.getElementById('fieldName').value.trim();
-    const location = document.getElementById('location').value.trim();
-    const size = document.getElementById('fieldSize').value.trim();
-    const log = document.getElementById('fieldLog').value.trim();
+    const formData = {
+        id: document.getElementById('fieldId').value || Date.now().toString(),
+        name: document.getElementById('fieldName').value.trim(),
+        location: document.getElementById('location').value.trim(),
+        size: document.getElementById('fieldSize').value.trim(),
+        log: document.getElementById('fieldLog').value.trim(),
+        lastUpdated: new Date().toISOString()
+    };
+
+    if (!validateFieldData(formData)) return;
+
     const image1File = document.getElementById('fieldImage').files[0];
     const image2File = document.getElementById('fieldImage2').files[0];
 
-    // Validation
-    const nameRegex = /^[a-zA-Z\s]{3,}$/; // Name should have at least 3 letters
-    const locationRegex = /^-?\d+(\.\d+)?,\s*-?\d+(\.\d+)?$/; // Latitude, Longitude format
-    const sizeRegex = /^\d+(\.\d{1,2})?$/; // Allow positive numbers with up to 2 decimal places
+    Promise.all([
+        processImage(image1File),
+        processImage(image2File)
+    ]).then(([image1, image2]) => {
+        formData.image1 = image1 || (fields.find(f => f.id === formData.id)?.image1 || '');
+        formData.image2 = image2 || (fields.find(f => f.id === formData.id)?.image2 || '');
 
-    if (!nameRegex.test(name)) {
-        alert('Invalid name: Only letters and spaces, with at least 3 characters');
-        return;
-    }
-
-    if (!locationRegex.test(location)) {
-        alert('Invalid location: Please enter latitude and longitude in the format "lat, lng"');
-        return;
-    }
-
-    if (!sizeRegex.test(size)) {
-        alert('Invalid size: Please enter a positive number, optionally with up to two decimal places');
-        return;
-    }
-
-    const newField = {
-        id: id || Date.now().toString(),
-        name,
-        location,
-        size,
-        log,
-        image1: '',
-        image2: ''
-    };
-
-    // Convert image files to data URLs if available
-    if (image1File) {
-        const reader1 = new FileReader();
-        reader1.onload = function (e) {
-            newField.image1 = e.target.result;
-            saveOrUpdateField(newField);
-        };
-        reader1.readAsDataURL(image1File);
-    } else {
-        saveOrUpdateField(newField);
-    }
-
-    if (image2File) {
-        const reader2 = new FileReader();
-        reader2.onload = function (e) {
-            newField.image2 = e.target.result;
-            saveOrUpdateField(newField);
-        };
-        reader2.readAsDataURL(image2File);
-    } else {
-        saveOrUpdateField(newField);
-    }
+        saveField(formData);
+    });
 }
 
-function saveOrUpdateField(field) {
-    const existingIndex = fields.findIndex(f => f.id === field.id);
+function validateFieldData(data) {
+    const nameRegex = /^[a-zA-Z0-9\s]{3,50}$/;
+    const locationRegex = /^-?\d+(\.\d+)?,\s*-?\d+(\.\d+)?$/;
+    const sizeRegex = /^\d+(\.\d{1,2})?$/;
 
-    if (existingIndex > -1) {
-        // Update existing field
-        fields[existingIndex] = field;
-    } else {
-        // Add new field
-        fields.push(field);
+    if (!nameRegex.test(data.name)) {
+        showNotification('Invalid name: 3-50 characters, letters, numbers, and spaces only', 'error');
+        return false;
     }
 
+    if (!locationRegex.test(data.location)) {
+        showNotification('Invalid location format: Use latitude, longitude', 'error');
+        return false;
+    }
+
+    if (!sizeRegex.test(data.size)) {
+        showNotification('Invalid size: Use positive numbers with up to 2 decimal places', 'error');
+        return false;
+    }
+
+    return true;
+}
+
+function processImage(file) {
+    return new Promise((resolve) => {
+        if (!file) {
+            resolve(null);
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (e) => resolve(e.target.result);
+        reader.readAsDataURL(file);
+    });
+}
+
+function saveField(fieldData) {
+    const index = fields.findIndex(f => f.id === fieldData.id);
+
+    if (index > -1) {
+        fields[index] = { ...fields[index], ...fieldData };
+        showNotification('Field updated successfully', 'info');
+    } else {
+        fields.push(fieldData);
+        showNotification('Field added successfully', 'success');
+    }
+
+    saveFieldsToStorage();
     closeFieldModal();
     renderFields();
 }
 
-
-function renderFields() {
-    const fieldTableBody = document.getElementById('fieldTableBody');
-    fieldTableBody.innerHTML = '';
-
-    fields.forEach(field => {
-        const row = document.createElement('tr');
-
-        row.innerHTML = `
-            <td>${field.id}</td>
-            <td>${field.name}</td>
-            <td>${field.location}</td>
-            <td>${field.size}</td>
-            <td>${field.log}</td>
-            <td>
-             <button onclick="openFieldModal(${JSON.stringify(field).replace(/"/g, '&quot;')})" class="edit-btn">Edit</button>
-                <button onclick="deleteField('${field.id}')" class="delete-btn">Delete</button>
-                <button onclick="viewMore('${field.id}')" class="view-btn">View</button>
-            </td>
-        `;
-
-        fieldTableBody.appendChild(row);
-    });
-}
-
 function deleteField(id) {
-    if (confirm('Are you sure you want to delete this field?')) {
-        fields = fields.filter(field => field.id !== id);
-        renderFields();
-    }
+    if (!confirm('Are you sure you want to delete this field?')) return;
 
+    fields = fields.filter(field => field.id !== id);
+    saveFieldsToStorage();
+    renderFields();
+    showNotification('Field deleted successfully', 'error');
 }
 
 function viewMore(id) {
     const field = fields.find(field => field.id === id);
+    if (!field) return;
 
     document.getElementById('viewFieldId').textContent = field.id;
     document.getElementById('viewFieldName').textContent = field.name;
     document.getElementById('viewFieldLocation').textContent = field.location;
-    document.getElementById('viewFieldSize').textContent = field.size;
+    document.getElementById('viewFieldSize').textContent = field.size + ' acres';
     document.getElementById('viewFieldLog').textContent = field.log;
 
-    const imagePreview1 = document.getElementById('viewFieldImage1');
-    const imagePreview2 = document.getElementById('viewFieldImage2');
+    const image1 = document.getElementById('viewFieldImage1');
+    const image2 = document.getElementById('viewFieldImage2');
 
     if (field.image1) {
-        imagePreview1.src = field.image1;
-        imagePreview1.style.display = 'block';
+        image1.src = field.image1;
+        image1.style.display = 'block';
     } else {
-        imagePreview1.style.display = 'none';
+        image1.style.display = 'none';
     }
 
     if (field.image2) {
-        imagePreview2.src = field.image2;
-        imagePreview2.style.display = 'block';
+        image2.src = field.image2;
+        image2.style.display = 'block';
     } else {
-        imagePreview2.style.display = 'none';
+        image2.style.display = 'none';
     }
 
     document.getElementById('viewMoreModal').style.display = 'block';
 }
 
-function closeViewMoreModal() {
-    document.getElementById('viewMoreModal').style.display = 'none';
+// UI Functions
+function renderFields() {
+    const tbody = document.getElementById('fieldTableBody');
+    tbody.innerHTML = '';
+
+    if (fields.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="6" class="no-results">
+                    <i class="fas fa-seedling"></i>
+                    <p>No fields added yet. Click "Add Field" to get started.</p>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    fields.forEach(field => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${field.id}</td>
+            <td>${field.name}</td>
+            <td>${field.location}</td>
+            <td>${field.size} acres</td>
+            <td>${field.log}</td>
+            <td>
+                <div class="action-buttons">
+                    <button onclick="openFieldModal('${field.id}')" class="edit-btn" title="Edit">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button onclick="deleteField('${field.id}')" class="delete-btn" title="Delete">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                    <button onclick="viewMore('${field.id}')" class="view-btn" title="View Details">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+function initializeSearchBar() {
+    const searchInput = document.querySelector('.search-bar input');
+    searchInput.addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase();
+        const filteredFields = fields.filter(field =>
+            field.name.toLowerCase().includes(searchTerm) ||
+            field.location.toLowerCase().includes(searchTerm)
+        );
+        renderFilteredFields(filteredFields);
+    });
+}
+
+function renderFilteredFields(filteredFields) {
+    const tbody = document.getElementById('fieldTableBody');
+    tbody.innerHTML = '';
+
+    if (filteredFields.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="6" class="no-results">
+                    <i class="fas fa-search"></i>
+                    <p>No fields found matching your search</p>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    filteredFields.forEach(field => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${field.id}</td>
+            <td>${field.name}</td>
+            <td>${field.location}</td>
+            <td>${field.size} acres</td>
+            <td>${field.log}</td>
+            <td>
+                <div class="action-buttons">
+                    <button onclick="openFieldModal('${field.id}')" class="edit-btn" title="Edit">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button onclick="deleteField('${field.id}')" class="delete-btn" title="Delete">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                    <button onclick="viewMore('${field.id}')" class="view-btn" title="View Details">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+function openFieldModal(fieldId = null) {
+    const modal = document.getElementById('fieldModal');
+    const form = document.getElementById('fieldForm');
+    form.reset();
+
+    // Reset image previews
+    document.getElementById('imagePreview1').style.display = 'none';
+    document.getElementById('imagePreview2').style.display = 'none';
+
+    if (fieldId) {
+        const field = fields.find(f => f.id === fieldId);
+        if (field) {
+            document.getElementById('modalTitle').textContent = 'Edit Field';
+            populateFormWithFieldData(field);
+        }
+    } else {
+        document.getElementById('modalTitle').textContent = 'Add New Field';
+        document.getElementById('fieldId').value = '';
+    }
+
+    modal.style.display = 'block';
+    initializeMap();
+}
+
+function populateFormWithFieldData(field) {
+    document.getElementById('fieldId').value = field.id;
+    document.getElementById('fieldName').value = field.name;
+    document.getElementById('location').value = field.location;
+    document.getElementById('fieldSize').value = field.size;
+    document.getElementById('fieldLog').value = field.log;
+
+    if (field.image1) {
+        document.getElementById('imagePreview1').src = field.image1;
+        document.getElementById('imagePreview1').style.display = 'block';
+    }
+    if (field.image2) {
+        document.getElementById('imagePreview2').src = field.image2;
+        document.getElementById('imagePreview2').style.display = 'block';
+    }
+
+    if (field.location) {
+        const [lat, lng] = field.location.split(',').map(coord => parseFloat(coord.trim()));
+        if (map) {
+            map.setView([lat, lng], 15);
+            if (currentMarker) {
+                currentMarker.setLatLng([lat, lng]);
+            } else {
+                currentMarker = L.marker([lat, lng]).addTo(map);
+            }
+        }
+    }
+}
+
+function initializeMap() {
+    if (!map) {
+        map = L.map('map').setView([7.8731, 80.7718], 7);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        map.on('click', (e) => {
+            const { lat, lng } = e.latlng;
+            document.getElementById('location').value = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+
+            if (currentMarker) {
+                currentMarker.setLatLng(e.latlng);
+            } else {
+                currentMarker = L.marker(e.latlng).addTo(map);
+            }
+        });
+    }
+}
+
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+        <span>${message}</span>
+    `;
+
+    // Append the notification to the body
+    document.body.appendChild(notification);
+
+    // Remove the notification after 3 seconds
+    setTimeout(() => {
+        notification.classList.add('fade-out');
+        setTimeout(() => {
+            notification.remove();
+        }, 500); // Wait for fade-out transition to finish
+    }, 3000); // Keep the notification visible for 3 seconds
 }
 
 
 function updateDateTime() {
     const dateTimeElement = document.getElementById('dateTime');
     if (dateTimeElement) {
-        dateTimeElement.textContent = new Date().toLocaleString();
-    } else {
-        console.error("Element with ID 'dateTime' not found.");
+        setInterval(() => {
+            dateTimeElement.textContent = new Date().toLocaleString();
+        }, 1000);
     }
 }
 
-setInterval(updateDateTime, 1000);
-
-document.addEventListener('DOMContentLoaded', () => {
-    renderFields();
-    updateDateTime();
-})
-
-let map;  // Declare map globally to ensure it's only initialized once.
-
-function openFieldModal(editField = null) {
-    const modal = document.getElementById('fieldModal');
-    const modalTitle = document.getElementById('modalTitle');
-    const fieldForm = document.getElementById('fieldForm');
-    const locationInput = document.getElementById('location');
-
-    const image1Input = document.getElementById('image1');
-    const image2Input = document.getElementById('image2');
-
-    fieldForm.reset();
-    document.getElementById('fieldId').value = '';
-
-    if (editField) {
-        modalTitle.textContent = 'Edit Field';
-        document.getElementById('fieldId').value = editField.id;
-        document.getElementById('fieldName').value = editField.name;
-        document.getElementById('location').value = editField.location;
-        document.getElementById('fieldSize').value = editField.size;
-        document.getElementById('fieldLog').value = editField.log;
-        document.getElementById('imagePreview1').src = editField.image1;
-        document.getElementById('imagePreview2').src = editField.image2;
-
-    } else {
-        modalTitle.textContent = 'Add Field';
+// Event Listeners
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        closeFieldModal();
+        closeViewMoreModal();
     }
+});
 
-    modal.style.display = 'block';
+// Close modal when clicking outside
+window.addEventListener('click', (e) => {
+    const fieldModal = document.getElementById('fieldModal');
+    const viewMoreModal = document.getElementById('viewMoreModal');
 
-    if (!map) {
-        map = L.map('map').setView([7.8731, 80.7718], 7);
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-        }).addTo(map);
+    if (e.target === fieldModal) {
+        closeFieldModal();
     }
-
-    let marker;
-    map.on('click', function (e) {
-        const {lat, lng} = e.latlng;
-        locationInput.value = `${lat.toFixed(5)},  ${lng.toFixed(5)}`;
-        if (marker) {
-            marker.setLatLng(e.latlng);
-        } else {
-            marker = L.marker([lat, lng]).addTo(map);
-        }
-    });
-}
-
-function previewImage1(event) {
-    const fileInput = event.target;
-    const preview = document.getElementById('imagePreview1');
-
-    if (fileInput.files && fileInput.files[0]) {
-        const reader = new FileReader();
-
-        reader.onload = function (e) {
-            preview.src = e.target.result;
-            preview.style.display = 'block'; // Show the preview
-        };
-
-        reader.readAsDataURL(fileInput.files[0]);
+    if (e.target === viewMoreModal) {
+        closeViewMoreModal();
     }
-}
-
-function previewImage2(event) {
-    const fileInput = event.target;
-    const preview = document.getElementById('imagePreview2');
-
-    if (fileInput.files && fileInput.files[0]) {
-        const reader = new FileReader();
-
-        reader.onload = function (e) {
-            preview.src = e.target.result;
-            preview.style.display = 'block'; // Show the preview
-        };
-
-        reader.readAsDataURL(fileInput.files[0]);
-    }
-}
-
-
+});
