@@ -7,7 +7,6 @@ let currentMarker = null;
 document.addEventListener('DOMContentLoaded', () => {
     loadFieldsFromStorage();
     renderFields();
-    updateDateTime();
     initializeSearchBar();
     initializeMenuToggle();
 });
@@ -381,15 +380,6 @@ function showNotification(message, type = 'info') {
     }, 3000); // Keep the notification visible for 3 seconds
 }
 
-
-function updateDateTime() {
-    const dateTimeElement = document.getElementById('dateTime');
-    if (dateTimeElement) {
-        setInterval(() => {
-            dateTimeElement.textContent = new Date().toLocaleString();
-        }, 1000);
-    }
-}
 
 // Event Listeners
 document.addEventListener('keydown', (e) => {

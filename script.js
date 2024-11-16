@@ -38,6 +38,16 @@ logoutBtn.addEventListener('click', () => {
         console.log('Logging out...');
     }
 });
+function updateDateTime() {
+    const dateTimeElement = document.getElementById("date-time");
+    if (dateTimeElement) {
+        dateTimeElement.textContent = new Date().toLocaleString();
+    }
+    setTimeout(updateDateTime, 1000);
+}
 
+document.addEventListener("DOMContentLoaded", () => {
+    updateDateTime();
+});
 
 

@@ -283,26 +283,36 @@ body {
 }
 
 .search-bar {
-    display: flex;
-    align-items: center;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    padding: 6px 8px;
-    max-width: 100%;
-    flex: 1;
-    margin-bottom: 10px;
-}
-
-.search-bar i {
-    color: #aaa;
-    margin-right: 8px;
+    margin-bottom: 20px;
+    position: relative;
 }
 
 .search-bar input {
-    border: none;
-    outline: none;
     width: 100%;
-    font-size: 1rem;
+    padding: 8px 32px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.search-bar i {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6b7280;
+}
+
+.text-center {
+    text-align: center;
+    padding: 40px;
+    color: #6b7280;
+}
+
+.text-center i {
+    font-size: 48px;
+    margin-bottom: 16px;
+    color: #9ca3af;
 }
 
 
@@ -314,20 +324,29 @@ body {
     font-weight: bolder;
 }
 
-.field-list , .crop-list , .equipment-list{
+.field-list , .crop-list , .equipment-list , .staff-table{
     overflow-x: auto;
     max-width: 100%;
 }
 
-.field-table , .crop-table, .equipment-table {
+.field-table , .crop-table, .equipment-table , .staff-table {
     width: 100%;
     border-collapse: collapse;
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.field-table th, .field-table td , .crop-table th, .crop-table td , .equipment-table th, .equipment-table td {
+.field-table th, .field-table td , .crop-table th, .crop-table td , .equipment-table th, .equipment-table td , .staff-table th, .staff-table td {
     padding: 12px;
     text-align: left;
     border-bottom: 1px solid #ddd;
+}
+.field-table th, .crop-table th, .equipment-table th , .staff-table th {
+    background-color: #f8fafc;
+    font-weight: 600;
+    color: #4b5563;
 }
 
 @media (max-width: 1200px) {
@@ -377,24 +396,27 @@ body {
         padding: var(--spacing-sm);
     }
 
-    .field-table, .field-table thead, .field-table tbody, .field-table th, .field-table td, .field-table tr .crop-table, .crop-table thead, .crop-table tbody, .crop-table th, .crop-table td, .crop-table tr,.equipment-table, .equipment-table thead, .equipment-table tbody, .equipment-table th, .equipment-table td, .equipment-table tr {
+    .field-table, .field-table thead, .field-table tbody, .field-table th, .field-table td, .field-table tr
+    .crop-table, .crop-table thead, .crop-table tbody, .crop-table th, .crop-table td, .crop-table tr,.equipment-table,
+    .equipment-table thead, .equipment-table tbody, .equipment-table th, .equipment-table td, .equipment-table tr,
+    .staff-table, .staff-table thead, .staff-table tbody, .staff-table th, .staff-table td, .staff-table tr {
         display: block;
         width: 100%;
     }
 
-    .field-table tr .crop-table tr  .equipment-table tr {
+    .field-table tr .crop-table tr  .equipment-table tr .staff-table tr {
         margin-bottom: 15px;
         border: 1px solid #ddd;
         border-radius: 5px;
     }
 
-    .field-table td .crop-table td .equipment-table td {
+    .field-table td .crop-table td .equipment-table td  .staff-table td {
         padding: 8px;
         text-align: right;
         position: relative;
     }
 
-    .field-table td::before  .crop-table td::before .equipment-table td::before {
+    .field-table td::before  .crop-table td::before .equipment-table td::before  .staff-table td::before {
         content: attr(data-label);
         position: absolute;
         left: 10px;
@@ -402,7 +424,7 @@ body {
         color: #555;
     }
 
-    .field-table th  .crop-table th  .equipment-table th {
+    .field-table th  .crop-table th  .equipment-table th  .staff-table th {
         display: none;
     }
 

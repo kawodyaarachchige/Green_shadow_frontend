@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Green Shadow - Staff Management">
+    <meta name="author" content="Tharu Arachchige">
+    <title>Staff Management</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../assets/style/modal.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+<div class="app-container">
+    <button id="menuToggle" class="menu-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="../assets/image/logo.png" alt="Logo" class="logo">
+            <h1>Green Shadow</h1>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="../dashboard/dashboard.html" class="nav-item" data-section="dashboard">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="../field/field.html" class="nav-item" data-section="fields">
+                <i class="fas fa-map-marked-alt"></i>
+                <span>Fields</span>
+            </a>
+            <a href="../crop/crop.html" class="nav-item" data-section="crops">
+                <i class="fas fa-seedling"></i>
+                <span>Crops</span>
+            </a>
+            <a href="../staff/staff.html" class="nav-item" data-section="staff">
+                <i class="fas fa-user-tie"></i>
+                <span>Staff</span>
+            </a>
+            <a href="../equipment/equipment.html" class="nav-item" data-section="equipment">
+                <i class="fas fa-tools"></i>
+                <span>Equipment</span>
+            </a>
+            <a href="#" class="nav-item" data-section="vehicles">
+                <i class="fas fa-truck"></i>
+                <span>Vehicles</span>
+            </a>
+            <a href="#" class="nav-item" data-section="logs">
+                <i class="fas fa-clipboard-list"></i>
+                <span>Logs</span>
+            </a>
+        </nav>
+        <a href="../index.html">
+            <button class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </a>
+        <button class="setting-btn">
+            <i class="fas fa-cog"></i>
+            <span>Settings</span>
+        </button>
+    </aside>
+    <main class="main-content">
+        <div class="staff-management">
+            <header class="staff-header">
+                <h2>Manage Staff</h2>
+                <button class="action-btn" onclick="openStaffModal()">
+                    <i class="fas fa-plus"></i> Add Staff
+                </button>
+            </header>
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search staff...">
+            </div>
+            <div class="staff-list">
+                <table class="staff-table">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Designation</th>
+                        <th>Contact</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody id="staffTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Add/Edit Staff Modal -->
+        <div class="modal" id="staffModal">
+            <div class="modal-content">
+                <span class="close-btn" onclick="closeStaffModal()">&times;</span>
+                <h2 id="modalTitle">Add Staff</h2>
+                <form id="staffForm" onsubmit="handleStaffFormSubmit(event)">
+                    <input type="hidden" id="staffId">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="firstName">First Name</label>
+                            <input type="text" id="firstName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">Last Name</label>
+                            <input type="text" id="lastName" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="designation">Designation</label>
+                            <select id="designation" required>
+                                <option value="">Select Designation</option>
+                                <option value="Technician">Technician</option>
+                                <option value="Scientist">Scientist</option>
+                                <option value="Manager">Manager</option>
+                                <option value="Administrator">Administrator</option>
+                                <option value="Field Worker">Field Worker</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="gender">Gender</label>
+                            <select id="gender" required>
+                                <option value="">Select Gender</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="joinDate">Join Date</label>
+                            <input type="date" id="joinDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="dob">Date of Birth</label>
+                            <input type="date" id="dob" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="addressLine1">Address Line 1</label>
+                        <input type="text" id="addressLine1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="addressLine2">Address Line 2</label>
+                        <input type="text" id="addressLine2">
+                    </div>
+                    <div class="form-group">
+                        <label for="addressLine3">Address Line 3</label>
+                        <input type="text" id="addressLine3">
+                    </div>
+                    <div class="form-group">
+                        <label for="addressLine4">Address Line 4</label>
+                        <input type="text" id="addressLine4">
+                    </div>
+                    <div class="form-group">
+                        <label for="addressLine5">Address Line 5</label>
+                        <input type="text" id="addressLine5">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="contactNumber">Contact Number</label>
+                            <input type="tel" id="contactNumber" required pattern="[0-9]{10}">
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="role">Role</label>
+                        <select id="role" required>
+                            <option value="">Select Role</option>
+                            <option value="Admin">Admin</option>
+                            <option value="Manager">Manager</option>
+                            <option value="Scientist">Scientist</option>
+                            <option value="Staff">Staff</option>
+                        </select>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="submit-btn">Save Staff</button>
+                      <!--  <button type="button" onclick="closeStaffModal()" class="cancel-btn">Cancel</button>-->
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+<script src="../script.js"></script>
+<script src="staff.js"></script>
+</body>
+</html>
