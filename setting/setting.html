@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Green Shadow - Account Settings">
+  <meta name="author" content="Your Name">
+  <title>Account Settings</title>
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="../assets/style/modal.css">
+  <link rel="stylesheet" href="setting.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+<div class="app-container">
+  <button id="menuToggle" class="menu-toggle">
+    <i class="fas fa-bars"></i>
+  </button>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <img src="../assets/image/logo.png" alt="Logo" class="logo">
+      <h1>Green Shadow</h1>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="../dashboard/dashboard.html" class="nav-item" data-section="dashboard">
+        <i class="fas fa-home"></i>
+        <span>Dashboard</span>
+      </a>
+      <a href="../field/field.html" class="nav-item" data-section="fields">
+        <i class="fas fa-map-marked-alt"></i>
+        <span>Fields</span>
+      </a>
+      <a href="../crop/crop.html" class="nav-item" data-section="crops">
+        <i class="fas fa-seedling"></i>
+        <span>Crops</span>
+      </a>
+      <a href="../staff/staff.html" class="nav-item" data-section="staff">
+        <i class="fas fa-user-tie"></i>
+        <span>Staff</span>
+      </a>
+      <a href="../equipment/equipment.html" class="nav-item" data-section="equipment">
+        <i class="fas fa-tools"></i>
+        <span>Equipment</span>
+      </a>
+      <a href="../vehicle/vehicle.html" class="nav-item" data-section="vehicles">
+        <i class="fas fa-truck"></i>
+        <span>Vehicles</span>
+      </a>
+      <a href="../log/log.html" class="nav-item" data-section="logs">
+        <i class="fas fa-clipboard-list"></i>
+        <span>Logs</span>
+      </a>
+    </nav>
+    <a href="../index.html">
+      <button class="logout-btn">
+        <i class="fas fa-sign-out-alt"></i>
+        <span>Logout</span>
+      </button>
+    </a>
+    <button class="setting-btn active">
+      <i class="fas fa-cog"></i>
+      <span>Settings</span>
+    </button>
+  </aside>
+  <main class="main-content">
+    <div id="account_settings" class="settings-management">
+      <header class="settings-header">
+        <div class="greeting">
+          <h1>Account Settings</h1>
+          <p>Manage your email, password, role, and role code settings.</p>
+        </div>
+      </header>
+
+      <div class="settings-grid">
+        <!-- Profile Settings -->
+        <div class="settings-card">
+          <div class="card-header">
+            <i class="fas fa-user-circle"></i>
+            <h2>Profile Settings</h2>
+          </div>
+          <form id="settings-form" class="settings-form">
+            <div class="form-group">
+              <label for="emailForSettings">Email</label>
+              <input type="email" id="emailForSettings" disabled/>
+            </div>
+            <div class="form-group">
+              <label for="roleForSettings">Role</label>
+              <select id="roleForSettings" required>
+                <option value="MANAGER">Manager</option>
+                <option value="ADMINISTRATIVE">Administrative</option>
+                <option value="SCIENTIST">Scientist</option>
+                <option value="OTHER">Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="roleCode">Role Code</label>
+              <input type="text" id="roleCode" placeholder="Enter role code" required />
+            </div>
+            <button type="submit" class="submit-btn">
+              <i class="fas fa-save"></i> Save Changes
+            </button>
+          </form>
+        </div>
+
+        <!-- Password Settings -->
+        <div class="settings-card">
+          <div class="card-header">
+            <i class="fas fa-lock"></i>
+            <h2>Change Password</h2>
+          </div>
+          <form id="change-password-form" class="settings-form">
+            <div class="form-group">
+              <label for="currentPassword">Current Password</label>
+              <div class="password-input">
+                <input type="password" id="currentPassword" placeholder="Enter current password" required />
+                <i class="fas fa-eye toggle-password"></i>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="newPassword">New Password</label>
+              <div class="password-input">
+                <input type="password" id="newPassword" placeholder="Enter new password" required />
+                <i class="fas fa-eye toggle-password"></i>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="confirmPassword">Confirm Password</label>
+              <div class="password-input">
+                <input type="password" id="confirmPassword" placeholder="Confirm new password" required />
+                <i class="fas fa-eye toggle-password"></i>
+              </div>
+            </div>
+            <button type="submit" class="submit-btn">
+              <i class="fas fa-key"></i> Update Password
+            </button>
+          </form>
+        </div>
+
+        <!-- Delete Account -->
+        <div class="settings-card danger-zone">
+          <div class="card-header">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h2>Danger Zone</h2>
+          </div>
+          <form id="delete-account-form" class="settings-form">
+            <div class="form-group">
+              <label for="deletePassword">Confirm Password</label>
+              <div class="password-input">
+                <input type="password" id="deletePassword" placeholder="Enter password to confirm" required />
+                <i class="fas fa-eye toggle-password"></i>
+              </div>
+            </div>
+            <button type="button" class="delete-btn" onclick="confirmDeleteAccount()">
+              <i class="fas fa-trash-alt"></i> Delete Account
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmModal" class="modal">
+      <div class="modal-content">
+        <span class="close-btn">&times;</span>
+        <h2>Confirm Action</h2>
+        <p id="confirmMessage"></p>
+        <div class="modal-actions">
+          <button id="confirmYes" class="danger-btn">Yes, proceed</button>
+          <button id="confirmNo" class="cancel-btn">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+<script src="../script.js"></script>
+<script src="setting.js"></script>
+</body>
+</html>

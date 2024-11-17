@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Green Shadow - Vehicle Management">
+    <meta name="description" content="Green Shadow - Log Management">
     <meta name="author" content="Your Name">
-    <title>Vehicle Management</title>
+    <title>Log Management</title>
     <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="../assets/style/modal.css">
-    <link rel="stylesheet" href="vehicle.css">
+    <link rel="stylesheet" href="log.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
@@ -42,11 +42,11 @@
                 <i class="fas fa-tools"></i>
                 <span>Equipment</span>
             </a>
-            <a href="#" class="nav-item active" data-section="vehicles">
+            <a href="../vehicle/vehicle.html" class="nav-item" data-section="vehicles">
                 <i class="fas fa-truck"></i>
                 <span>Vehicles</span>
             </a>
-            <a href="#" class="nav-item" data-section="logs">
+            <a href="#" class="nav-item active" data-section="logs">
                 <i class="fas fa-clipboard-list"></i>
                 <span>Logs</span>
             </a>
@@ -63,83 +63,62 @@
         </button>
     </aside>
     <main class="main-content">
-        <div id="vehicle_management" class="vehicle-management">
-            <header class="vehicle-header">
+        <div id="log_management" class="log-management">
+            <header class="log-header">
                 <div class="greeting">
-                    <h1>Manage Vehicles</h1>
-                    <p>Add, update, or delete vehicle information.</p>
+                    <h1>Manage Logs</h1>
+                    <p>Add, update, or delete log information.</p>
                 </div>
-                <button class="action-btn" onclick="openVehicleModal()">
-                    <i class="fas fa-plus"></i> Add Vehicle
+                <button class="action-btn" onclick="openLogModal()">
+                    <i class="fas fa-plus"></i> Add Log
                 </button>
             </header>
 
             <div class="search-bar">
                 <i class="fas fa-search"></i>
-                <input type="text" id="vehicleSearch" placeholder="Search vehicles...">
+                <input type="text" id="logSearch" placeholder="Search logs...">
             </div>
 
-            <!-- Vehicle Table -->
-            <div class="vehicle-table">
-                <h2>Vehicle List</h2>
-                <table id="vehicle-list">
+            <!-- Log Table -->
+            <div class="log-table">
+                <h2>Log List</h2>
+                <table id="log-list">
                     <thead>
                     <tr>
-                        <th>Vehicle Id</th>
-                        <th>License No</th>
-                        <th>Category</th>
-                        <th>Fuel Type</th>
-                        <th>Status</th>
-                        <th>Staff Id</th>
+                        <th>Log ID</th>
+                        <th>Date</th>
+                        <th>Details</th>
+                        <th>Image</th>
                         <th>Actions</th>
                     </tr>
                     </thead>
-                    <tbody id="vehicleTableBody"></tbody>
+                    <tbody id="logTableBody"></tbody>
                 </table>
             </div>
         </div>
 
-        <!-- Add/Edit Vehicle Modal -->
-        <div class="modal" id="vehicleModal">
+        <!-- Add/Edit Log Modal -->
+        <div class="modal" id="logModal">
             <div class="modal-content">
-                <span class="close-btn" onclick="closeVehicleModal()">&times;</span>
-                <h2 id="modalTitle">Add Vehicle</h2>
-                <form id="vehicleForm" onsubmit="handleVehicleFormSubmit(event)">
-                    <input type="hidden" id="vehicleId">
+                <span class="close-btn" onclick="closeLogModal()">&times;</span>
+                <h2 id="modalTitle">Add Log</h2>
+                <form id="logForm" onsubmit="handleLogFormSubmit(event)">
+                    <input type="hidden" id="logId">
                     <div class="form-group">
-                        <label for="licenNo">License Number:</label>
-                        <input type="text" id="licenNo" placeholder="Enter license number" required />
+                        <label for="logDate">Log Date:</label>
+                        <input type="date" id="logDate" required/>
                     </div>
                     <div class="form-group">
-                        <label for="category">Category:</label>
-                        <input type="text" id="category" placeholder="Enter vehicle category" required />
+                        <label for="logDetails">Log Details:</label>
+                        <textarea id="logDetails" placeholder="Enter log details" required></textarea>
                     </div>
                     <div class="form-group">
-                        <label for="fuelType">Fuel Type:</label>
-                        <select id="fuelType" required>
-                            <option value="Petrol">Petrol</option>
-                            <option value="Diesel">Diesel</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="vehicleStatus">Vehicle Status:</label>
-                        <select id="vehicleStatus" required>
-                            <option value="AVAILABLE">AVAILABLE</option>
-                            <option value="UNAVAILABLE">UNAVAILABLE</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="staffIdOnVehicle">Staff ID:</label>
-                        <select id="staffIdOnVehicle" required>
-                            <!-- Will be populated dynamically -->
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="remark">Remark:</label>
-                        <textarea id="remark" placeholder="Enter remark"></textarea>
+                        <label for="logImage">Log Image:</label>
+                        <input type="file" id="logImage" accept="image/*"/>
+                        <div id="imagePreview" class="image-preview"></div>
                     </div>
                     <div class="form-actions">
-                        <button type="submit" class="submit-btn">Save Vehicle</button>
+                        <button type="submit" class="submit-btn">Save Log</button>
                         <button type="button" onclick="clearForm()" class="clear-btn">Clear</button>
                     </div>
                 </form>
@@ -148,6 +127,6 @@
     </main>
 </div>
 <script src="../script.js"></script>
-<script src="vehicle.js"></script>
+<script src="log.js"></script>
 </body>
 </html>

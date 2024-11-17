@@ -1,135 +1,196 @@
-// Initialize map for selecting vehicle location
-let map, marker;
-function initMap() {
-    map = L.map('vehicleMap').setView([51.505, -0.09], 13); // Default location
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-    }).addTo(map);
+// Vehicle Management JavaScript
 
-    map.on('click', function(e) {
-        const { lat, lng } = e.latlng;
-        document.getElementById('vehicleLocation').value = `Lat: ${lat}, Lng: ${lng}`;
+// Mock data for initial testing
+let vehicles = [
+    {
+        id: 'V001',
+        licenseNumber: 'ABC123',
+        category: 'Truck',
+        fuelType: 'Diesel',
+        status: 'AVAILABLE',
+        staffId: 'S001',
+        remark: 'Regular maintenance done'
+    }
+];
 
-        if (marker) {
-            map.removeLayer(marker);
-        }
+// Mock staff data
+let staffList = [
+    { id: 'S001', name: 'John Doe' },
+    { id: 'S002', name: 'Jane Smith' }
+];
 
-        marker = L.marker([lat, lng]).addTo(map);
+// DOM Elements
+const vehicleModal = document.getElementById('vehicleModal');
+const vehicleForm = document.getElementById('vehicleForm');
+const vehicleTableBody = document.getElementById('vehicleTableBody');
+const searchInput = document.getElementById('vehicleSearch');
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    loadStaffList();
+    renderVehicleTable();
+    setupSearchListener();
+});
+
+// Load staff list into select dropdown
+function loadStaffList() {
+    const staffSelect = document.getElementById('staffIdOnVehicle');
+    staffSelect.innerHTML = '<option value="">Select Staff</option>';
+    staffList.forEach(staff => {
+        const option = document.createElement('option');
+        option.value = staff.id;
+        option.textContent = `${staff.id} - ${staff.name}`;
+        staffSelect.appendChild(option);
     });
 }
 
-document.addEventListener('DOMContentLoaded', initMap);
-
-// Function to open the Add/Edit Vehicle modal
-function openVehicleModal() {
-    document.getElementById('vehicleModal').style.display = 'block';
-    document.getElementById('modalTitle').textContent = 'Add Vehicle';
+// Search functionality
+function setupSearchListener() {
+    searchInput.addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase();
+        const filteredVehicles = vehicles.filter(vehicle =>
+            vehicle.licenseNumber.toLowerCase().includes(searchTerm) ||
+            vehicle.category.toLowerCase().includes(searchTerm) ||
+            vehicle.staffId.toLowerCase().includes(searchTerm)
+        );
+        renderVehicleTable(filteredVehicles);
+    });
 }
 
-// Function to close the Vehicle modal
+// Render vehicle table
+function renderVehicleTable(vehiclesToRender = vehicles) {
+    vehicleTableBody.innerHTML = '';
+    vehiclesToRender.forEach(vehicle => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${vehicle.id}</td>
+            <td>${vehicle.licenseNumber}</td>
+            <td>${vehicle.category}</td>
+            <td>${vehicle.fuelType}</td>
+            <td>${vehicle.status}</td>
+            <td>${vehicle.staffId}</td>
+            <td class="table-actions">
+                <button onclick="editVehicle('${vehicle.id}')" class="edit-btn">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button onclick="deleteVehicle('${vehicle.id}')" class="delete-btn">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        `;
+        vehicleTableBody.appendChild(row);
+    });
+}
+
+// Open modal for adding new vehicle
+function openVehicleModal() {
+    document.getElementById('modalTitle').textContent = 'Add Vehicle';
+    clearForm();
+    vehicleModal.style.display = 'block';
+}
+
+// Close modal
 function closeVehicleModal() {
-    document.getElementById('vehicleModal').style.display = 'none';
+    vehicleModal.style.display = 'none';
+    clearForm();
+}
+
+// Clear form
+function clearForm() {
+    vehicleForm.reset();
+    document.getElementById('vehicleId').value = '';
+    document.getElementById('modalTitle').textContent = 'Add Vehicle';
 }
 
 // Handle form submission
 function handleVehicleFormSubmit(event) {
     event.preventDefault();
 
-    const vehicleData = {
-        id: document.getElementById('vehicleId').value,
-        name: document.getElementById('vehicleName').value,
-        location: document.getElementById('vehicleLocation').value,
-        type: document.getElementById('vehicleType').value,
+    const vehicleId = document.getElementById('vehicleId').value;
+    const vehicle = {
+        id: vehicleId || `V${String(vehicles.length + 1).padStart(3, '0')}`,
+        licenseNumber: document.getElementById('licenNo').value,
+        category: document.getElementById('category').value,
+        fuelType: document.getElementById('fuelType').value,
         status: document.getElementById('vehicleStatus').value,
-        log: document.getElementById('vehicleLog').value,
+        staffId: document.getElementById('staffIdOnVehicle').value,
+        remark: document.getElementById('remark').value
     };
 
-    // Add or update vehicle entry
-    if (vehicleData.id) {
-        updateVehicle(vehicleData);
+    if (vehicleId) {
+        // Update existing vehicle
+        const index = vehicles.findIndex(v => v.id === vehicleId);
+        vehicles[index] = vehicle;
     } else {
-        addVehicle(vehicleData);
+        // Add new vehicle
+        vehicles.push(vehicle);
     }
 
+    renderVehicleTable();
     closeVehicleModal();
+    showNotification(vehicleId ? 'Vehicle updated successfully!' : 'Vehicle added successfully!');
 }
 
-// Sample function to add a vehicle (could be replaced with backend logic)
-function addVehicle(vehicleData) {
-    const vehicleTableBody = document.getElementById('vehicleTableBody');
-    const row = vehicleTableBody.insertRow();
-
-    row.innerHTML = `
-        <td>${vehicleData.id}</td>
-        <td>${vehicleData.name}</td>
-        <td>${vehicleData.location}</td>
-        <td>${vehicleData.type}</td>
-        <td>${vehicleData.status}</td>
-        <td>${vehicleData.log}</td>
-        <td>
-            <button onclick="editVehicle(${vehicleData.id})">Edit</button>
-            <button onclick="deleteVehicle(${vehicleData.id})">Delete</button>
-        </td>
-    `;
-}
-
-// Preview image functions
-function previewVehicleImage1(event) {
-    const reader = new FileReader();
-    reader.onload = function() {
-        const preview = document.getElementById('vehicleImagePreview1');
-        preview.src = reader.result;
-        preview.style.display = 'block';
-    };
-    reader.readAsDataURL(event.target.files[0]);
-}
-
-function previewVehicleImage2(event) {
-    const reader = new FileReader();
-    reader.onload = function() {
-        const preview = document.getElementById('vehicleImagePreview2');
-        preview.src = reader.result;
-        preview.style.display = 'block';
-    };
-    reader.readAsDataURL(event.target.files[0]);
-}
-
-// Function to edit a vehicle
+// Edit vehicle
 function editVehicle(id) {
-    // Fetch data and populate modal fields
-    document.getElementById('modalTitle').textContent = 'Edit Vehicle';
-    openVehicleModal();
-    // Populate fields with existing data for the selected vehicle
-    // Example:
-    document.getElementById('vehicleId').value = id; // Replace with actual data retrieval
+    const vehicle = vehicles.find(v => v.id === id);
+    if (vehicle) {
+        document.getElementById('vehicleId').value = vehicle.id;
+        document.getElementById('licenNo').value = vehicle.licenseNumber;
+        document.getElementById('category').value = vehicle.category;
+        document.getElementById('fuelType').value = vehicle.fuelType;
+        document.getElementById('vehicleStatus').value = vehicle.status;
+        document.getElementById('staffIdOnVehicle').value = vehicle.staffId;
+        document.getElementById('remark').value = vehicle.remark;
+
+        document.getElementById('modalTitle').textContent = 'Edit Vehicle';
+        vehicleModal.style.display = 'block';
+    }
 }
 
-// Function to delete a vehicle
+// Delete vehicle
 function deleteVehicle(id) {
-    // Remove vehicle row (or call backend to delete)
-    const row = document.querySelector(`#vehicleTableBody tr[data-id="${id}"]`);
-    if (row) row.remove();
+    if (confirm('Are you sure you want to delete this vehicle?')) {
+        vehicles = vehicles.filter(vehicle => vehicle.id !== id);
+        renderVehicleTable();
+        showNotification('Vehicle deleted successfully!');
+    }
 }
 
-// Handle 'View More' modal for vehicle details
-function openViewVehicleModal(vehicle) {
-    document.getElementById('viewVehicleId').textContent = vehicle.id;
-    document.getElementById('viewVehicleName').textContent = vehicle.name;
-    document.getElementById('viewVehicleLocation').textContent = vehicle.location;
-    document.getElementById('viewVehicleType').textContent = vehicle.type;
-    document.getElementById('viewVehicleStatus').textContent = vehicle.status;
-    document.getElementById('viewVehicleLog').textContent = vehicle.log;
+// Show notification
+function showNotification(message) {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    notification.textContent = message;
 
-    document.getElementById('viewVehicleImage1').src = vehicle.image1;
-    document.getElementById('viewVehicleImage1').style.display = 'block';
+    // Style the notification
+    notification.style.position = 'fixed';
+    notification.style.top = '20px';
+    notification.style.right = '20px';
+    notification.style.backgroundColor = '#4CAF50';
+    notification.style.color = 'white';
+    notification.style.padding = '1rem';
+    notification.style.borderRadius = '4px';
+    notification.style.zIndex = '1000';
 
-    document.getElementById('viewVehicleImage2').src = vehicle.image2;
-    document.getElementById('viewVehicleImage2').style.display = 'block';
+    // Add to document
+    document.body.appendChild(notification);
 
-    document.getElementById('viewVehicleModal').style.display = 'block';
+    // Remove after 3 seconds
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
 }
 
-// Close 'View More' modal
-function closeViewVehicleModal() {
-    document.getElementById('viewVehicleModal').style.display = 'none';
+// Close modal when clicking outside
+window.onclick = function(event) {
+    if (event.target === vehicleModal) {
+        closeVehicleModal();
+    }
 }
+
+// Handle menu toggle
+document.getElementById('menuToggle').addEventListener('click', () => {
+    document.getElementById('sidebar').classList.toggle('active');
+});
