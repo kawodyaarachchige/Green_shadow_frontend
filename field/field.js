@@ -360,27 +360,6 @@ function initializeMap() {
     }
 }
 
-function showNotification(message, type = 'info') {
-    const notification = document.createElement('div');
-    notification.className = `notification ${type}`;
-    notification.innerHTML = `
-        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
-        <span>${message}</span>
-    `;
-
-    // Append the notification to the body
-    document.body.appendChild(notification);
-
-    // Remove the notification after 3 seconds
-    setTimeout(() => {
-        notification.classList.add('fade-out');
-        setTimeout(() => {
-            notification.remove();
-        }, 500); // Wait for fade-out transition to finish
-    }, 3000); // Keep the notification visible for 3 seconds
-}
-
-
 // Event Listeners
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
