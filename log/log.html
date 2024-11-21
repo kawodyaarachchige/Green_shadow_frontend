@@ -62,70 +62,123 @@
             <span>Settings</span>
         </button>
     </aside>
+    <!-- Main Content -->
     <main class="main-content">
-        <div id="log_management" class="log-management">
-            <header class="log-header">
-                <div class="greeting">
-                    <h1>Manage Logs</h1>
-                    <p>Add, update, or delete log information.</p>
-                </div>
-                <button class="action-btn" onclick="openLogModal()">
-                    <i class="fas fa-plus"></i> Add Log
-                </button>
-            </header>
+        <div class="header">
+            <h1>Log Management</h1>
+            <button class="btn-primary" onclick="openLogModal()">
+                <i class="fas fa-plus"></i> New Log
+            </button>
+        </div>
 
+        <!-- Search and Filter Section -->
+        <div class="filter-section">
+            <!-- Search Bar -->
             <div class="search-bar">
                 <i class="fas fa-search"></i>
-                <input type="text" id="logSearch" placeholder="Search logs...">
+                <input type="text" id="searchInput" placeholder="Search logs...">
             </div>
 
-            <!-- Log Table -->
-            <div class="log-table">
-                <h2>Log List</h2>
-                <table id="log-list">
-                    <thead>
-                    <tr>
-                        <th>Log ID</th>
-                        <th>Date</th>
-                        <th>Details</th>
-                        <th>Image</th>
-                        <th>Actions</th>
-                    </tr>
-                    </thead>
-                    <tbody id="logTableBody"></tbody>
-                </table>
+            <!-- Date Range Filter -->
+            <div class="date-filter">
+                <div class="date-input">
+                    <label for="startDate">From:</label>
+                    <input type="date" id="startDate">
+                </div>
+                <div class="date-input">
+                    <label for="endDate">To:</label>
+                    <input type="date" id="endDate">
+                </div>
+                <button class="btn-filter" id="filterLogsByDate">
+                    <i class="fas fa-filter"></i> Filter
+                </button>
+                <button class="btn-clear" id="clearFilters">
+                    <i class="fas fa-times"></i> Clear
+                </button>
             </div>
         </div>
 
-        <!-- Add/Edit Log Modal -->
-        <div class="modal" id="logModal">
-            <div class="modal-content">
-                <span class="close-btn" onclick="closeLogModal()">&times;</span>
-                <h2 id="modalTitle">Add Log</h2>
-                <form id="logForm" onsubmit="handleLogFormSubmit(event)">
-                    <input type="hidden" id="logId">
-                    <div class="form-group">
-                        <label for="logDate">Log Date:</label>
-                        <input type="date" id="logDate" required/>
-                    </div>
-                    <div class="form-group">
-                        <label for="logDetails">Log Details:</label>
-                        <textarea id="logDetails" placeholder="Enter log details" required></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="logImage">Log Image:</label>
-                        <input type="file" id="logImage" accept="image/*"/>
-                        <div id="imagePreview" class="image-preview"></div>
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="submit-btn">Save Log</button>
-                        <button type="button" onclick="clearForm()" class="clear-btn">Clear</button>
-                    </div>
-                </form>
-            </div>
+        <!-- Logs Table -->
+        <div class="table-container">
+            <table>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Image</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody id="logsTableBody"></tbody>
+            </table>
         </div>
     </main>
+
+    <!-- Log Modal -->
+    <div id="logModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Log</h2>
+                <button class="close-btn" onclick="closeLogModal()">×</button>
+            </div>
+            <form id="logForm">
+                <div class="form-group">
+                    <label>Log ID</label>
+                    <input type="text" id="logId" disabled placeholder="Auto-generated">
+                </div>
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" id="logDate" required>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="logDescription" required rows="4"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-primary" id="btn-save-log">Save Log</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Image Upload Modal -->
+    <div id="imageModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Upload Image</h2>
+                <button class="close-btn" onclick="closeImageModal()">×</button>
+            </div>
+            <form id="imageForm" >
+                <!--<div class="form-group">
+                    <label>Select Log</label>
+                    <select id="logSelect" required>
+                        <option value="">Choose a log...</option>
+                    </select>
+                </div>-->
+                <div class="form-group">
+                    <label>Log ID</label>
+                    <input type="text" id="logId-2" disabled placeholder="Auto-generated">
+                </div>
+                <div class="form-group">
+                    <label>Upload Image</label>
+                    <div class="file-upload">
+                        <input type="file" id="imageInput" accept="image/*" required>
+                        <div class="upload-area">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Click or drag image here</p>
+                        </div>
+                        <div id="imagePreview" class="image-preview"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-primary" id="btn-upload-image">Upload</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
+<script src="../assets/lib/jquery.min.js"></script>
 <script src="../script.js"></script>
 <script src="log.js"></script>
 </body>
