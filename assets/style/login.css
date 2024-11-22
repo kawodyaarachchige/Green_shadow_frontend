@@ -138,6 +138,7 @@ h2 {
     margin-bottom: 2rem;
 }
 
+
 .input-group {
     position: relative;
     margin-bottom: 1.5rem;
@@ -152,6 +153,48 @@ input {
     font-size: 1rem;
     transition: all 0.3s ease;
     background: rgba(255, 255, 255, 0.9);
+
+}
+.input-group .toggle-password  {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 16px; /* Adjust size */
+    color: gray; /* Icon color */
+}
+.input-group select:focus + label,
+.input-group select:not([value=""]) + label {
+    top: 0;
+    transform: translateY(-50%) scale(0.85);
+    background: white;
+    color: var(--text-light);
+}
+
+select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid rgba(229, 231, 235, 0.8);
+    border-radius: 0.5rem;
+    outline: none;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.9);
+    appearance: none;
+}
+
+select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+    background: white;
+}
+
+.input-group select {
+    background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 5"><path fill="%236b7280" d="M2 0L0 2h4z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 0.65rem auto;
 }
 
 input:focus {

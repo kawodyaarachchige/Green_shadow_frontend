@@ -8,8 +8,8 @@ document.getElementById('menuToggle').addEventListener('click', function() {
 });
 logoutBtn.addEventListener('click', () => {
     if (confirm('Are you sure you want to logout?')) {
-        // Implement logout logic here
         console.log('Logging out...');
+        window.location.href = '../index.html';
     }
 });
 navItems.forEach(item => {
@@ -34,9 +34,6 @@ function handleSectionChange(section) {
 
 // Logout Handler
 logoutBtn.addEventListener('click', () => {
-    if (confirm('Are you sure you want to logout?')) {
-        console.log('Logging out...');
-    }
 });
 function updateDateTime() {
     const dateTimeElement = document.getElementById("date-time");

@@ -23,13 +23,14 @@
                 <p class="subtitle">Monitor your crops with precision</p>
 
                 <div class="input-group">
-                    <input type="email" id="loginEmail" required>
-                    <label for="loginEmail">Email Address</label>
+                    <input type="email" id="email" required>
+                    <label for="email">Email Address</label>
                 </div>
 
                 <div class="input-group">
-                    <input type="password" id="loginPassword" required>
-                    <label for="loginPassword">Password</label>
+                    <input type="password" id="password" required>
+                    <label for="password">Password</label>
+                    <img src="https://api.iconify.design/mdi:eye.svg" class="toggle-password" alt="Show Password">
                 </div>
 
                 <div class="remember-forgot">
@@ -37,7 +38,7 @@
                 </div>
 
                 <button type="submit" class="submit-btn">Login</button>
-                <p class="switch-text">Don't have an account? <a href="dashboard/dashboard.html" id="showSignup">Sign Up</a></p>
+                <p class="switch-text">Don't have an account? <a href="#" id="showSignup">Sign Up</a></p>
             </form>
 
             <!-- Signup Form -->
@@ -56,26 +57,35 @@
                 </div>
 
                 <div class="input-group">
-                    <input type="email" id="role" required>
+                    <select  id="role" required>
+                        <option value="" selected></option>
+                        <option value="MANAGER">MANAGER</option>
+                        <option value="ADMINISTRATIVE">ADMINISTRATIVE</option>
+                        <option value="SCIENTIST">SCIENTIST</option>
+                    </select>
                     <label for="role">Role</label>
                 </div>
-
+                <div class="input-group">
+                    <input type="text" id="roleCode" required>
+                    <label for="roleCode">Role Code</label>
+                </div>
                 <div class="input-group">
                     <input type="password" id="signupPassword" required>
                     <label for="signupPassword">Password</label>
+                    <img src="https://api.iconify.design/mdi:eye.svg" class="toggle-password" alt="Show Password">
                 </div>
-
                 <div class="input-group">
                     <input type="password" id="confirmPassword" required>
                     <label for="confirmPassword">Confirm Password</label>
+                    <img src="https://api.iconify.design/mdi:eye.svg" class="toggle-password" alt="Show Password">
                 </div>
-
                 <button type="submit" class="submit-btn">Create Account</button>
                 <p class="switch-text">Already have an account? <a href="#" id="showLogin">Login</a></p>
             </form>
         </div>
     </div>
 </div>
-<script src="assets/script/login.js"></script>
+<script src="assets/lib/jquery.min.js"></script>
+<script src="assets/script/auth.js"></script>
 </body>
 </html>
