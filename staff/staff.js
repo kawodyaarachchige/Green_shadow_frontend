@@ -3,10 +3,169 @@ let staffData = [];
 
 // Initialize data and event listeners
 document.addEventListener('DOMContentLoaded', () => {
-    loadSavedData();
+    const token = getCookie("token");
+    const userLoggedIn = getCookie("user");
+    loadStaffTable(token)
+
+    loadLogSelector(token);
+
+
+    const btnSaveStaff = document.getElementById("btn-save-staff");
+    if (btnSaveStaff) {
+        btnSaveStaff.addEventListener("click", () => {
+        if(document.getElementById("staffId").value === "") {
+            saveNewStaff(token);
+        }else {
+            updateStaff(token);
+        }
+
+        });
+
     displayStaffData();
     initializeSearch();
+    }
+
 });
+const  loadLogSelector = (token) => {
+    const logSelector = document.getElementById("logIdStaff");
+
+    $.ajax({
+        url: "http://localhost:8089/gs/api/v1/logs",
+        type: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        },
+        success: (data) => {
+            data.forEach((log) => {
+                const option = document.createElement("option");
+                option.value = log.logCode;
+                option.textContent = log.logDetails;
+                logSelector.appendChild(option);
+            });
+        },
+        error: (error) => {
+            console.log("Something went wrong:", error);
+        }
+    });
+}
+const saveNewStaff = (token) => {
+
+    const firstName = document.getElementById("firstName").value;
+    const lastName = document.getElementById("lastName").value;
+    const designation = document.getElementById("designation").value;
+    const gender = document.getElementById("gender").value;
+    const joinedDate = document.getElementById("joinDate").value;
+    const dob = document.getElementById("dob").value;
+    const addressLine1 = document.getElementById("addressLine1").value;
+    const addressLine2 = document.getElementById("addressLine2").value;
+    const addressLine3 = document.getElementById("addressLine3").value;
+    const addressLine4 = document.getElementById("addressLine4").value;
+    const addressLine5 = document.getElementById("addressLine5").value;
+    const contactNumber = document.getElementById("contactNumber").value;
+    const email = document.getElementById("email").value;
+    const role = document.getElementById("role").value;
+    const logCode = document.getElementById("logIdStaff").value;
+    if(!firstName || !lastName || !designation || !gender || !joinedDate || !dob || !addressLine1 || !addressLine2 || !addressLine3 || !addressLine4 || !addressLine5 || !contactNumber || !email || !role) {
+        showNotification("Please fill in all required fields", "error");
+    }
+
+    const staffModel = {
+        firstName,
+        lastName,
+        designation,
+        gender,
+        joinedDate,
+        dob,
+        addressLine1,
+        addressLine2,
+        addressLine3,
+        addressLine4,
+        addressLine5,
+        contactNumber,
+        email,
+        role,
+        logCode
+    }
+    console.log(staffModel)
+
+    $.ajax({
+        url: "http://localhost:8089/gs/api/v1/staff",
+        type: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        },
+        data: JSON.stringify(staffModel),
+        success: (data) => {
+            showNotification("Staff member saved successfully", "success");
+            closeStaffModal();
+            loadStaffTable(token);
+        },
+        error: (error) => {
+            showNotification("Staff member could not be saved", "error");
+            console.log("Something went wrong:", error);
+        }
+    });
+}
+const updateStaff = (token) => {
+    const staffId = document.getElementById("staffId").value;
+    const firstName = document.getElementById("firstName").value;
+    const lastName = document.getElementById("lastName").value;
+    const designation = document.getElementById("designation").value;
+    const gender = document.getElementById("gender").value;
+    const joinedDate = document.getElementById("joinDate").value;
+    const dob = document.getElementById("dob").value;
+    const addressLine1 = document.getElementById("addressLine1").value;
+    const addressLine2 = document.getElementById("addressLine2").value;
+    const addressLine3 = document.getElementById("addressLine3").value;
+    const addressLine4 = document.getElementById("addressLine4").value;
+    const addressLine5 = document.getElementById("addressLine5").value;
+    const contactNumber = document.getElementById("contactNumber").value;
+    const email = document.getElementById("email").value;
+    const role = document.getElementById("role").value;
+    const logCode = document.getElementById("logIdStaff").value;
+
+    if(!firstName || !lastName || !designation || !gender || !joinedDate || !dob || !addressLine1 || !addressLine2 || !addressLine3 || !addressLine4 || !addressLine5 || !contactNumber || !email || !role) {
+        showNotification("Please fill in all required fields", "info");
+
+    }
+    $.ajax({
+        url: `http://localhost:8089/gs/api/v1/staff/${staffId}`,
+        type: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        },
+        data: JSON.stringify({
+            firstName,
+            lastName,
+            designation,
+            gender,
+            joinedDate,
+            dob,
+            addressLine1,
+            addressLine2,
+            addressLine3,
+            addressLine4,
+            addressLine5,
+            contactNumber,
+            email,
+            role,
+            logCode
+        }),
+        success: (data) => {
+            showNotification("Staff member updated successfully", "success");
+            closeStaffModal();
+            loadStaffTable(token);
+        },
+        error: (error) => {
+            showNotification("Staff member could not be updated", "error");
+            console.log("Something went wrong:", error);
+        }
+    });
+}
+
 
 // Initialize search functionality
 function initializeSearch() {
@@ -22,12 +181,23 @@ function initializeSearch() {
     });
 }
 
-// Load saved data from localStorage
-function loadSavedData() {
-    const savedStaffData = localStorage.getItem('staffData');
-    if (savedStaffData) {
-        staffData = JSON.parse(savedStaffData);
-    }
+const loadStaffTable = (token) => {
+    clearFields();
+    const staffTable = document.getElementById('staffTableBody');
+    $.ajax({
+        url: "http://localhost:8089/gs/api/v1/staff",
+        type: "GET",
+        headers: {
+            "Authorization": `Bearer ${token}`
+        },
+        success: (data) => {
+            staffData = data;
+            displayStaffData(data);
+        },
+        error: (error) => {
+            console.log("Something went wrong:", error);
+        }
+    });
 }
 
 // Display staff data in table
@@ -56,112 +226,53 @@ function displayStaffData(dataToDisplay = staffData) {
             <td>${staff.contactNumber}</td>
             <td>${staff.email}</td>
             <td>${staff.role}</td>
-            <td>
-                <button onclick="editStaff('${staff.id}')" class="edit-btn">
-                    <i class="fas fa-edit"></i>
-                </button>
-                <button onclick="deleteStaff('${staff.id}')" class="delete-btn">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </td>
         `;
+
+        const actionCell = document.createElement("td");
+        actionCell.className = "action-buttons";
+
+        const editButton = document.createElement("button");
+        editButton.className = "action-btn edit-btn";
+        editButton.innerHTML = `<i class="fas fa-edit"></i>`;
+        editButton.onclick = () => editStaff(staff.id,staff.firstName,staff.lastName,staff.designation,staff.gender,staff.joinedDate,staff.dob,staff.addressLine1,staff.addressLine2,staff.addressLine3,staff.addressLine4,staff.addressLine5,staff.contactNumber,staff.email,staff.role);
+
+        const deleteButton = document.createElement("button");
+        deleteButton.className = "action-btn delete-btn";
+        deleteButton.innerHTML = `<i class="fas fa-trash"></i>`;
+        deleteButton.onclick = () => deleteStaff(staff.id);
+
+        actionCell.appendChild(editButton);
+        actionCell.appendChild(deleteButton);
+
+        row.appendChild(actionCell);
+
         tableBody.appendChild(row);
     });
 }
-
-// Handle form submission
-function handleStaffFormSubmit(event) {
-    event.preventDefault();
-
-    const formData = {
-        id: document.getElementById('staffId').value || Date.now().toString(),
-        firstName: document.getElementById('firstName').value,
-        lastName: document.getElementById('lastName').value,
-        designation: document.getElementById('designation').value,
-        gender: document.getElementById('gender').value,
-        joinDate: document.getElementById('joinDate').value,
-        dob: document.getElementById('dob').value,
-        addressLine1: document.getElementById('addressLine1').value,
-        addressLine2: document.getElementById('addressLine2').value,
-        addressLine3: document.getElementById('addressLine3').value,
-        addressLine4: document.getElementById('addressLine4').value,
-        addressLine5: document.getElementById('addressLine5').value,
-        contactNumber: document.getElementById('contactNumber').value,
-        email: document.getElementById('email').value,
-        role: document.getElementById('role').value
-    };
-
-    if (document.getElementById('staffId').value) {
-        // Update existing staff
-        const index = staffData.findIndex(s => s.id === formData.id);
-        if (index !== -1) {
-            staffData[index] = formData;
+function deleteStaff(staffId) {
+    console.log(staffId)
+    const token = getCookie("token");
+    $.ajax({
+        url: `http://localhost:8089/gs/api/v1/staff/${staffId}`,
+        type: "DELETE",
+        headers: {
+            "Authorization": `Bearer ${token}`
+        },
+        success: () => {
+            showNotification("Staff member deleted successfully", "success");
+            loadStaffTable(token);
+        },
+        error: (error) => {
+            showNotification("Something went wrong, staff member could not be deleted", "error");
+            console.log("Something went wrong:", error);
         }
-    } else {
-        // Add new staff
-        staffData.push(formData);
-    }
-
-    saveAndRefresh();
-    closeStaffModal();
+    });
 }
 
-// Edit staff
-function editStaff(id) {
-    const staff = staffData.find(s => s.id === id);
-    if (staff) {
-        document.getElementById('modalTitle').textContent = 'Edit Staff';
-        document.getElementById('staffId').value = staff.id;
-        document.getElementById('firstName').value = staff.firstName;
-        document.getElementById('lastName').value = staff.lastName;
-        document.getElementById('designation').value = staff.designation;
-        document.getElementById('gender').value = staff.gender;
-        document.getElementById('joinDate').value = staff.joinDate;
-        document.getElementById('dob').value = staff.dob;
-        document.getElementById('addressLine1').value = staff.addressLine1;
-        document.getElementById('addressLine2').value = staff.addressLine2;
-        document.getElementById('addressLine3').value = staff.addressLine3;
-        document.getElementById('addressLine4').value = staff.addressLine4;
-        document.getElementById('addressLine5').value = staff.addressLine5;
-        document.getElementById('contactNumber').value = staff.contactNumber;
-        document.getElementById('email').value = staff.email;
-        document.getElementById('role').value = staff.role;
-
-        openStaffModal();
-    }
+function editStaff(staffId,firstName,lastName,designation,gender,joinedDate,dob,addressLine1,addressLine2,addressLine3,addressLine4,addressLine5,contactNumber,email,role) {
+    openStaffModal(staffId,firstName,lastName,designation,gender,joinedDate,dob,addressLine1,addressLine2,addressLine3,addressLine4,addressLine5,contactNumber,email,role);
 }
 
-// Delete staff
-function deleteStaff(id) {
-    if (confirm('Are you sure you want to delete this staff member?')) {
-        staffData = staffData.filter(s => s.id !== id);
-        saveAndRefresh();
-    }
-}
-
-/*// View staff details
-function viewStaffDetails(id) {
-    const staff = staffData.find(s => s.id === id);
-    if (staff) {
-        alert(`
-            Staff Details:
-            Name: ${staff.firstName} ${staff.lastName}
-            Designation: ${staff.designation}
-            Gender: ${staff.gender}
-            Join Date: ${staff.joinDate}
-            DOB: ${staff.dob}
-            Address: 
-            ${staff.addressLine1}
-            ${staff.addressLine2}
-            ${staff.addressLine3}
-            ${staff.addressLine4}
-            ${staff.addressLine5}
-            Contact: ${staff.contactNumber}
-            Email: ${staff.email}
-            Role: ${staff.role}
-        `);
-    }
-}*/
 
 // Save data and refresh display
 function saveAndRefresh() {
@@ -170,15 +281,58 @@ function saveAndRefresh() {
 }
 
 // Modal functions
-function openStaffModal() {
-    document.getElementById('staffModal').style.display = 'block';
+function openStaffModal(
+    staffId = null,
+    firstName = '',
+    lastName = '',
+    designation = '',
+    gender = '',
+    joinDate = '',
+    dob = '',
+    addressLine1 = '',
+    addressLine2 = '',
+    addressLine3 = '',
+    addressLine4 = '',
+    addressLine5 = '',
+    contactNumber = '',
+    email = '',
+    role = ''
+) {
+    const modal = document.getElementById('staffModal');
+    const form = document.getElementById('staffForm');
+    const titleElement = modal.querySelector('h2');
+
+    if (staffId) {
+        // Edit existing staff
+        titleElement.textContent = 'Edit Staff';
+        document.getElementById('staffId').value = staffId;
+        document.getElementById('firstName').value = firstName;
+        document.getElementById('lastName').value = lastName;
+        document.getElementById('designation').value = designation;
+        document.getElementById('gender').value = gender;
+        document.getElementById('joinDate').value = joinDate;
+        document.getElementById('dob').value = dob;
+        document.getElementById('addressLine1').value = addressLine1;
+        document.getElementById('addressLine2').value = addressLine2;
+        document.getElementById('addressLine3').value = addressLine3;
+        document.getElementById('addressLine4').value = addressLine4;
+        document.getElementById('addressLine5').value = addressLine5;
+        document.getElementById('contactNumber').value = contactNumber;
+        document.getElementById('email').value = email;
+        document.getElementById('role').value = role;
+    } else {
+        // Add new staff
+        titleElement.textContent = 'Add New Staff';
+        form.reset(); // Clear the form fields
+        document.getElementById('staffId').value = ''; // Ensure ID field is empty
+    }
+
+    modal.style.display = 'block'; // Display the modal
 }
 
+
+
 function closeStaffModal() {
-    const form = document.getElementById('staffForm');
-    form.reset();
-    document.getElementById('staffId').value = '';
-    document.getElementById('modalTitle').textContent = 'Add Staff';
     document.getElementById('staffModal').style.display = 'none';
 }
 
@@ -186,3 +340,59 @@ function closeStaffModal() {
 document.getElementById('menuToggle').addEventListener('click', () => {
     document.getElementById('sidebar').classList.toggle('collapsed');
 });
+
+const clearFields = () => {
+    document.getElementById("firstName").value = "";
+    document.getElementById("lastName").value = "";
+    document.getElementById("designation").value = "";
+    document.getElementById("gender").value = "";
+    document.getElementById("joinDate").value = "";
+    document.getElementById("dob").value = "";
+    document.getElementById("addressLine1").value = "";
+    document.getElementById("addressLine2").value = "";
+    document.getElementById("addressLine3").value = "";
+    document.getElementById("addressLine4").value = "";
+    document.getElementById("addressLine5").value = "";
+    document.getElementById("contactNumber").value = "";
+    document.getElementById("email").value = "";
+    document.getElementById("role").value = "";
+    document.getElementById("logIdStaff").value = "";
+}
+
+const getValues = () => {
+    const firstName = document.getElementById("firstName").value;
+    const lastName = document.getElementById("lastName").value;
+    const designation = document.getElementById("designation").value;
+    const gender = document.getElementById("gender").value;
+    const joinDate = document.getElementById("joinDate").value;
+    const dob = document.getElementById("dob").value;
+    const addressLine1 = document.getElementById("addressLine1").value;
+    const addressLine2 = document.getElementById("addressLine2").value;
+    const addressLine3 = document.getElementById("addressLine3").value;
+    const addressLine4 = document.getElementById("addressLine4").value;
+    const addressLine5 = document.getElementById("addressLine5").value;
+    const contactNumber = document.getElementById("contactNumber").value;
+    const email = document.getElementById("email").value;
+    const role = document.getElementById("role").value;
+    const logCode = document.getElementById("logIdStaff").value;
+
+    return {
+        firstName,
+        lastName,
+        designation,
+        gender,
+        joinDate,
+        dob,
+        addressLine1,
+        addressLine2,
+        addressLine3,
+        addressLine4,
+        addressLine5,
+        contactNumber,
+        email,
+        role,
+        logCode
+    };
+}
+
+

@@ -66,3 +66,8 @@ function showNotification(message, type = 'info') {
         }, 500); // Wait for fade-out transition to finish
     }, 3000); // Keep the notification visible for 3 seconds
 }
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    return parts.length === 2 ? parts.pop().split(';').shift() : null;
+}

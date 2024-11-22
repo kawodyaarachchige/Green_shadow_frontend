@@ -8,6 +8,7 @@
     <title>Staff Management</title>
     <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="../assets/style/modal.css">
+    <link rel="stylesheet" href="../log/log.css">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -72,7 +73,7 @@
             </header>
             <div class="search-bar">
                 <i class="fas fa-search"></i>
-                <input type="text" placeholder="Search staff...">
+                <input type="text" id="searchInput" placeholder="Search staff...">
             </div>
             <div class="staff-list">
                 <table class="staff-table">
@@ -98,8 +99,13 @@
             <div class="modal-content">
                 <span class="close-btn" onclick="closeStaffModal()">&times;</span>
                 <h2 id="modalTitle">Add Staff</h2>
-                <form id="staffForm" onsubmit="handleStaffFormSubmit(event)">
-                    <input type="hidden" id="staffId">
+                <form id="staffForm" >
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="staffId">Staff ID</label>
+                            <input type="text" id="staffId" disabled placeholder="Auto-generated" >
+                        </div>
+                         </div>
                     <div class="form-row">
                         <div class="form-group">
                             <label for="firstName">First Name</label>
@@ -125,10 +131,8 @@
                         <div class="form-group">
                             <label for="gender">Gender</label>
                             <select id="gender" required>
-                                <option value="">Select Gender</option>
-                                <option value="Male">Male</option>
-                                <option value="Female">Female</option>
-                                <option value="Other">Other</option>
+                                <option value="MALE">Male</option>
+                                <option value="FEMALE">Female</option>
                             </select>
                         </div>
                     </div>
@@ -175,15 +179,24 @@
                     <div class="form-group">
                         <label for="role">Role</label>
                         <select id="role" required>
-                            <option value="">Select Role</option>
-                            <option value="Admin">Admin</option>
-                            <option value="Manager">Manager</option>
-                            <option value="Scientist">Scientist</option>
-                            <option value="Staff">Staff</option>
+                            <option value="ADMINISTRATIVE">Admin</option>
+                            <option value="MANAGER">Manager</option>
+                            <option value="SCIENTIST">Scientist</option>
+                            <option value="OTHER">Staff</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="logIdStaff">Log ID:</label>
+                        <select id="logIdStaff">
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="fieldIdOnStaff">Field ID:</label>
+                        <select id="fieldIdOnStaff">
                         </select>
                     </div>
                     <div class="form-actions">
-                        <button type="submit" class="submit-btn">Save Staff</button>
+                        <button type="button" class="btn-primary" id="btn-save-staff">Save Staff</button>
                       <!--  <button type="button" onclick="closeStaffModal()" class="cancel-btn">Cancel</button>-->
                     </div>
                 </form>
@@ -191,6 +204,7 @@
         </div>
     </main>
 </div>
+<script src="../assets/lib/jquery.min.js"></script>
 <script src="../script.js"></script>
 <script src="staff.js"></script>
 </body>
