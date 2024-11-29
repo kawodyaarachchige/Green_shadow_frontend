@@ -1,38 +1,47 @@
 const logoutBtn = document.querySelector('.logout-btn');
 const navItems = document.querySelectorAll('.nav-item');
 const sidebar = document.getElementById('sidebar');
+
 // Toggle sidebar on mobile
-document.getElementById('menuToggle').addEventListener('click', function () {
-    const sidebar = document.getElementById('sidebar');
+document.getElementById('menuToggle').addEventListener('click', toggleSidebar);
+logoutBtn.addEventListener('click', handleLogout);
+navItems.forEach(item => item.addEventListener('click', handleNavItemClick));
+
+// Toggle sidebar visibility
+function toggleSidebar() {
     sidebar.classList.toggle('active');
-});
-logoutBtn.addEventListener('click', () => {
+}
+
+// Handle logout action
+function handleLogout() {
     if (confirm('Are you sure you want to logout?')) {
         console.log('Logging out...');
         window.location.href = '../index.html';
     }
-});
-navItems.forEach(item => {
-    item.addEventListener('click', () => {
-        navItems.forEach(i => i.classList.remove('active'));
-        item.classList.add('active');
-        const section = item.dataset.section;
-        handleSectionChange(section);
-        if (window.innerWidth <= 1024) {
-            sidebar.classList.remove('active');
-        }
-    });
-});
+}
 
-// Section Change Handler
+// Handle navigation item click
+function handleNavItemClick() {
+    navItems.forEach(i => i.classList.remove('active'));
+    this.classList.add('active');
+    const section = this.dataset.section;
+    handleSectionChange(section);
+    closeSidebarOnMobile();
+}
+
+// Change section handler
 function handleSectionChange(section) {
     console.log(`Switching to ${section} section`);
 }
 
-// Logout Handler
-logoutBtn.addEventListener('click', () => {
-});
+// Close sidebar on mobile if necessary
+function closeSidebarOnMobile() {
+    if (window.innerWidth <= 1024) {
+        sidebar.classList.remove('active');
+    }
+}
 
+// Update Date and Time every second
 function updateDateTime() {
     const dateTimeElement = document.getElementById("date-time");
     if (dateTimeElement) {
@@ -41,28 +50,40 @@ function updateDateTime() {
     setTimeout(updateDateTime, 1000);
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    updateDateTime();
-});
+document.addEventListener("DOMContentLoaded", updateDateTime);
 
+// Display notification
 function showNotification(message, type = 'info') {
-    const notification = document.createElement('div');
-    notification.className = `notification ${type}`;
-    notification.innerHTML = `
-        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
-        <span>${message}</span>
-    `;
-
+    const notification = createNotification(message, type);
     document.body.appendChild(notification);
 
     setTimeout(() => {
         notification.classList.add('fade-out');
-        setTimeout(() => {
-            notification.remove();
-        }, 500);
+        setTimeout(() => notification.remove(), 500);
     }, 3000);
 }
 
+// Create notification element
+function createNotification(message, type) {
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.innerHTML = `
+        <i class="fas fa-${getIconClass(type)}"></i>
+        <span>${message}</span>
+    `;
+    return notification;
+}
+
+// Get appropriate icon class based on notification type
+function getIconClass(type) {
+    switch (type) {
+        case 'success': return 'check-circle';
+        case 'error': return 'exclamation-circle';
+        default: return 'info-circle';
+    }
+}
+
+// Get a cookie by name
 function getCookie(name) {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);

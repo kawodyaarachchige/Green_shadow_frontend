@@ -4,131 +4,121 @@ document.addEventListener('DOMContentLoaded', () => {
     const token = getCookie("token");
     loadVehicleTable(token);
     loadStaffSelector(token);
-
     initializeSearch();
 });
 
-const loadStaffSelector = (token) => {
-    const staffSelector = document.getElementById("staffIdOnVehicle");
-
+const ajaxRequest = (url, method, data, token, successCallback, errorCallback) => {
     $.ajax({
-        url: "http://localhost:8089/gs/api/v1/staff",
-        type: "GET",
+        url,
+        type: method,
         headers: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${token}`
         },
-        success: (data) => {
-            data.forEach((staff) => {
+        data: data ? JSON.stringify(data) : null,
+        success: successCallback,
+        error: errorCallback
+    });
+};
+
+const loadStaffSelector = (token) => {
+    const staffSelector = document.getElementById("staffIdOnVehicle");
+
+    ajaxRequest(
+        "http://localhost:8089/gs/api/v1/staff",
+        "GET",
+        null,
+        token,
+        (data) => {
+            data.forEach(staff => {
                 const option = document.createElement("option");
                 option.value = staff.id;
                 option.textContent = `${staff.firstName} ${staff.lastName}`;
                 staffSelector.appendChild(option);
             });
         },
-        error: (error) => {
-            console.log("Something went wrong:", error);
+        (error) => {
             showNotification("Failed to load staff members", "error");
+            console.error("Error loading staff:", error);
         }
-    });
-}
+    );
+};
 
-function handleVehicleFormSubmit(event) {
+const handleVehicleFormSubmit = (event) => {
     event.preventDefault();
     const token = getCookie("token");
     const vehicleId = document.getElementById("vehicleId").value;
 
-    if (vehicleId === "") {
-        saveNewVehicle(token);
-    } else {
-        updateVehicle(token);
-    }
-}
+    vehicleId === "" ? saveNewVehicle(token) : updateVehicle(token);
+};
+
+const getVehicleFormData = () => {
+    return {
+        licensePlateNumber: document.getElementById("licenNo").value,
+        vehicleCategory: document.getElementById("category").value,
+        fuelType: document.getElementById("fuelType").value,
+        status: document.getElementById("vehicleStatus").value,
+        staff: document.getElementById("staffIdOnVehicle").value,
+        remarks: document.getElementById("remark").value
+    };
+};
+
+const validateVehicleForm = (vehicleData) => {
+    return Object.values(vehicleData).every(field => field !== "");
+};
 
 const saveNewVehicle = (token) => {
-    const licensePlateNumber = document.getElementById("licenNo").value;
-    const vehicleCategory = document.getElementById("category").value;
-    const fuelType = document.getElementById("fuelType").value;
-    const status = document.getElementById("vehicleStatus").value;
-    const staff = document.getElementById("staffIdOnVehicle").value;
-    const remarks = document.getElementById("remark").value;
+    const vehicleData = getVehicleFormData();
 
-    if (!licensePlateNumber || !vehicleCategory || !fuelType || !status || !staff) {
+    if (!validateVehicleForm(vehicleData)) {
         showNotification("Please fill in all required fields", "error");
         return;
     }
 
-    const vehicleModel = {
-        licensePlateNumber,
-        vehicleCategory,
-        fuelType,
-        status,
-        remarks,
-        staff
-    };
-
-    $.ajax({
-        url: "http://localhost:8089/gs/api/v1/vehicles",
-        type: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
-        },
-        data: JSON.stringify(vehicleModel),
-        success: (data) => {
+    ajaxRequest(
+        "http://localhost:8089/gs/api/v1/vehicles",
+        "POST",
+        vehicleData,
+        token,
+        () => {
             showNotification("Vehicle saved successfully", "success");
             closeVehicleModal();
             loadVehicleTable(token);
         },
-        error: (error) => {
+        (error) => {
             showNotification("Vehicle could not be saved", "error");
-            console.log("Something went wrong:", error);
+            console.error("Error saving vehicle:", error);
         }
-    });
-}
+    );
+};
 
 const updateVehicle = (token) => {
     const vehicleCode = document.getElementById("vehicleId").value;
-    const licensePlateNumber = document.getElementById("licenNo").value;
-    const vehicleCategory = document.getElementById("category").value;
-    const fuelType = document.getElementById("fuelType").value;
-    const status = document.getElementById("vehicleStatus").value;
-    const staff = document.getElementById("staffIdOnVehicle").value;
-    const remarks = document.getElementById("remark").value;
+    const vehicleData = getVehicleFormData();
 
-    if (!licensePlateNumber || !vehicleCategory || !fuelType || !status || !staff || !remarks) {
+    if (!validateVehicleForm(vehicleData)) {
         showNotification("Please fill in all required fields", "error");
         return;
     }
 
-    $.ajax({
-        url: `http://localhost:8089/gs/api/v1/vehicles/${vehicleCode}`,
-        type: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
-        },
-        data: JSON.stringify({
-            licensePlateNumber,
-            vehicleCategory,
-            fuelType,
-            status,
-            staff,
-            remarks
-        }),
-        success: (data) => {
+    ajaxRequest(
+        `http://localhost:8089/gs/api/v1/vehicles/${vehicleCode}`,
+        "PUT",
+        vehicleData,
+        token,
+        () => {
             showNotification("Vehicle updated successfully", "success");
             closeVehicleModal();
             loadVehicleTable(token);
         },
-        error: (error) => {
+        (error) => {
             showNotification("Vehicle could not be updated", "error");
-            console.log("Something went wrong:", error);
+            console.error("Error updating vehicle:", error);
         }
-    });
-}
+    );
+};
 
-function initializeSearch() {
+const initializeSearch = () => {
     const searchInput = document.getElementById('vehicleSearch');
     searchInput.addEventListener('input', (e) => {
         const searchTerm = e.target.value.toLowerCase();
@@ -137,28 +127,27 @@ function initializeSearch() {
         );
         displayVehicleData(filteredVehicles);
     });
-}
+};
 
 const loadVehicleTable = (token) => {
     clearFields();
-    $.ajax({
-        url: "http://localhost:8089/gs/api/v1/vehicles",
-        type: "GET",
-        headers: {
-            "Authorization": `Bearer ${token}`
-        },
-        success: (data) => {
+    ajaxRequest(
+        "http://localhost:8089/gs/api/v1/vehicles",
+        "GET",
+        null,
+        token,
+        (data) => {
             vehicleData = data;
             displayVehicleData(data);
         },
-        error: (error) => {
-            console.log("Something went wrong:", error);
+        (error) => {
             showNotification("Failed to load vehicles", "error");
+            console.error("Error loading vehicles:", error);
         }
-    });
-}
+    );
+};
 
-function displayVehicleData(dataToDisplay = vehicleData) {
+const displayVehicleData = (dataToDisplay = vehicleData) => {
     const tableBody = document.getElementById('vehicleTableBody');
     tableBody.innerHTML = '';
 
@@ -192,9 +181,9 @@ function displayVehicleData(dataToDisplay = vehicleData) {
         `;
         tableBody.appendChild(row);
     });
-}
+};
 
-function editVehicle(vehicle) {
+const editVehicle = (vehicle) => {
     openVehicleModal();
     document.getElementById("vehicleId").value = vehicle.vehicleCode;
     document.getElementById("licenNo").value = vehicle.licensePlateNumber;
@@ -205,9 +194,9 @@ function editVehicle(vehicle) {
     document.getElementById("remark").value = vehicle.remarks || '';
 
     document.getElementById("modalTitle").textContent = "Edit Vehicle";
-}
+};
 
-function openVehicleModal() {
+const openVehicleModal = () => {
     const modal = document.getElementById('vehicleModal');
     modal.style.display = 'block';
 
@@ -215,14 +204,14 @@ function openVehicleModal() {
         document.getElementById("modalTitle").textContent = "Add Vehicle";
         clearFields();
     }
-}
+};
 
-function closeVehicleModal() {
+const closeVehicleModal = () => {
     document.getElementById('vehicleModal').style.display = 'none';
     clearFields();
-}
+};
 
-function clearFields() {
+const clearFields = () => {
     document.getElementById("vehicleId").value = "";
     document.getElementById("licenNo").value = "";
     document.getElementById("category").value = "";
@@ -230,7 +219,7 @@ function clearFields() {
     document.getElementById("vehicleStatus").value = "AVAILABLE";
     document.getElementById("staffIdOnVehicle").value = "";
     document.getElementById("remark").value = "";
-}
+};
 
 function clearForm() {
     clearFields();
