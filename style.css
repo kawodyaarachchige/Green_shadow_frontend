@@ -324,12 +324,12 @@ body {
     font-weight: bolder;
 }
 
-.field-list , .crop-list , .equipment-list , .staff-table{
+.crop-list , .equipment-list , .staff-table{
     overflow-x: auto;
     max-width: 100%;
 }
 
-.field-table , .crop-table, .equipment-table , .staff-table {
+ .crop-table, .equipment-table , .staff-table {
     width: 100%;
     border-collapse: collapse;
     background-color: white;
@@ -338,7 +338,7 @@ body {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.field-table th, .field-table td , .crop-table th, .crop-table td , .equipment-table th, .equipment-table td , .staff-table th, .staff-table td {
+  .crop-table th, .crop-table td , .equipment-table th, .equipment-table td , .staff-table th, .staff-table td {
     padding: 12px;
     text-align: left;
     border-bottom: 1px solid #ddd;

@@ -73,7 +73,7 @@
             </header>
             <div class="search-bar">
                 <i class="fas fa-search"></i>
-                <input type="text" placeholder="Search crops..." />
+                <input type="text" id="cropSearch" placeholder="Search crops..." />
             </div>
             <div class="crop-list">
                 <table class="crop-table">
@@ -100,28 +100,38 @@
                 <span class="close-btn" onclick="closeCropModal()">&times;</span>
                 <h2 id="modalTitle">Add Crop</h2>
                 <form id="cropForm" onsubmit="handleCropFormSubmit(event)">
-                    <input type="hidden" id="cropId">
+                    <div class="form-group">
+                        <label for="cropId">Crop Code</label>
+                        <input type="text" id="cropId" disabled placeholder="Auto-generated">
+                    </div>
                     <div class="form-group">
                         <label for="specialName">Special Name</label>
                         <input type="text" id="specialName" required>
+
+
                     </div>
                     <div class="form-group">
                         <label for="commonName">Common Name</label>
                         <input type="text" id="commonName" required>
+
+
                     </div>
                     <div class="form-group">
                         <label for="category">Category</label>
                         <input type="text" id="category" required>
+
+
                     </div>
                     <div class="form-group">
                         <label for="fieldSelect">Select Field</label>
                         <select id="fieldSelect" name="field">
-                            <!-- Options will be populated dynamically -->
                         </select>
                     </div>
                     <div class="form-group">
                         <label for="season">Season</label>
                         <input type="text" id="season" required>
+
+
                     </div>
                     <div class="form-group">
                         <label for="cropImage">Crop Image</label>
@@ -151,7 +161,8 @@
         <div id="notificationContainer"></div>
     </main>
 </div>
-
+<script src="../assets/lib/jquery.min.js"></script>
+<script src="../assets/script/validation.js"></script>
 <script src="../script.js"></script>
 <script src="crop.js"></script>
 </body>

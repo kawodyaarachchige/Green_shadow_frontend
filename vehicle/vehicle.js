@@ -166,7 +166,7 @@ const displayVehicleData = (dataToDisplay = vehicleData) => {
     dataToDisplay.forEach(vehicle => {
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td>${vehicle.vehicleCode}</td>
+            <td title="${vehicle.vehicleCode}">${getFriendlyVehicleCode(vehicle.vehicleCode)}</td>
             <td>${vehicle.licensePlateNumber}</td>
             <td>${vehicle.vehicleCategory}</td>
             <td>${vehicle.fuelType}</td>
@@ -223,4 +223,10 @@ const clearFields = () => {
 
 function clearForm() {
     clearFields();
+}
+function getFriendlyVehicleCode(vehicleCode) {
+    const parts = vehicleCode.split('-');
+    const prefix = parts[0];
+    const shortUUID = parts[1].substring(0, 6);
+    return `${prefix} (${shortUUID})`;
 }

@@ -1,73 +1,97 @@
-// Global Variables
-let crops = [];
+let cropsData = [];
+let fieldMap = {};
 
-// Load data from localStorage
-function loadData() {
-    const savedCrops = localStorage.getItem('crops');
-    if (savedCrops) {
-        crops = JSON.parse(savedCrops);
+
+document.addEventListener('DOMContentLoaded', function () {
+    const token = getCookie("token");
+    getAllCrops(token);
+    initializeCropSearchBar();
+    loadFieldOptions(token);
+});
+
+const ajaxRequest = (url, method, data, token, successCallback, errorCallback) => {
+    $.ajax({
+        url,
+        type: method,
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        },
+        data: data ? JSON.stringify(data) : null,
+        success: successCallback,
+        error: errorCallback
+    });
+};
+
+const loadFieldOptions = (token) => {
+    const fieldSelect = document.getElementById('fieldSelect');
+    fieldSelect.innerHTML = ''; // Clear existing options
+
+    ajaxRequest(
+        "http://localhost:8089/gs/api/v1/fields",
+        "GET",
+        null,
+        token,
+        (data) => {
+            console.log('Fields Data:', data);
+
+            data.forEach(field => {
+                const option = document.createElement('option');
+                option.value = field.fieldCode;
+                option.textContent = field.fieldName;
+                fieldSelect.appendChild(option);
+
+                fieldMap[field.fieldCode] = field.fieldName;
+            });
+
+            console.log('Updated Field Map:', fieldMap);
+        },
+        (error) => {
+            console.error('Error loading fields:', error);
+            showNotification('Failed to load fields', 'error');
+        }
+    );
+
+};
+const getFieldName = (fieldCode) => {
+    if (fieldMap[fieldCode]) {
+        return fieldMap[fieldCode];
     }
-}
+};
 
-// Save crops to localStorage
-function saveData() {
-    localStorage.setItem('crops', JSON.stringify(crops));
-}
-
-// Fetch fields from localStorage
-function getFields() {
-    const savedFields = localStorage.getItem('fields');
-    return savedFields ? JSON.parse(savedFields) : [];
-}
-
-// Open Crop Modal
 function openCropModal(crop = null) {
     document.getElementById('cropModal').style.display = 'block';
-    loadFieldOptions();
+
+    const token = getCookie("token");
+    loadFieldOptions(token);
 
     if (crop) {
         document.getElementById('modalTitle').textContent = 'Edit Crop';
-        document.getElementById('cropId').value = crop.cropId;
-        document.getElementById('specialName').value = crop.specialName;
-        document.getElementById('commonName').value = crop.commonName;
+        document.getElementById('cropId').value = crop.cropCode;
+        document.getElementById('specialName').value = crop.cropScientificName;
+        document.getElementById('commonName').value = crop.cropCommonName;
         document.getElementById('category').value = crop.category;
-        document.getElementById('fieldSelect').value = crop.fieldId;
-        document.getElementById('season').value = crop.season;
+        document.getElementById('fieldSelect').value = crop.fieldCode;
+        document.getElementById('season').value = crop.cropSeason;
 
-        if (crop.image) {
-            document.getElementById('imagePreview').src = crop.image;
-            document.getElementById('imagePreview').style.display = 'block';
+        const imagePreview = document.getElementById('imagePreview');
+        if (crop.cropImage) {
+            imagePreview.src = `data:image/jpeg;base64,${crop.cropImage}`;
+            imagePreview.style.display = 'block';
         } else {
-            document.getElementById('imagePreview').style.display = 'none';
+            imagePreview.style.display = 'none';
         }
     } else {
         document.getElementById('modalTitle').textContent = 'Add Crop';
         document.getElementById('cropForm').reset();
-        document.getElementById('cropId').value = ''; // Clear the ID for a new entry
+        document.getElementById('cropId').value = '';
         document.getElementById('imagePreview').style.display = 'none';
     }
 }
 
-// Close Crop Modal
 function closeCropModal() {
     document.getElementById('cropModal').style.display = 'none';
 }
-
-// Load Field Options for Dropdown
-function loadFieldOptions() {
-    const fieldSelect = document.getElementById('fieldSelect');
-    const fields = getFields();
-
-    fieldSelect.innerHTML = ''; // Clear existing options
-    fields.forEach(field => {
-        const option = document.createElement('option');
-        option.value = field.id;
-        option.textContent = field.name;
-        fieldSelect.appendChild(option);
-    });
-}
-
-// Handle Crop Image Preview
 function previewCropImage(event) {
     const imagePreview = document.getElementById('imagePreview');
     const file = event.target.files[0];
@@ -75,174 +99,214 @@ function previewCropImage(event) {
         const reader = new FileReader();
         reader.onload = function (e) {
             imagePreview.src = e.target.result;
-            imagePreview.style.display = 'block'; // Show image preview
+            imagePreview.style.display = 'block';
         };
         reader.readAsDataURL(file);
     }
 }
-
-// Handle Crop Form Submission
 function handleCropFormSubmit(event) {
     event.preventDefault();
-
-    const cropId = document.getElementById('cropId').value || (crops.length + 1).toString(); // Auto-generate ID if not provided
-    const specialName = document.getElementById('specialName').value;
-    const commonName = document.getElementById('commonName').value;
-    const category = document.getElementById('category').value;
-    const fieldId = parseInt(document.getElementById('fieldSelect').value);
-    const season = document.getElementById('season').value;
-    const cropImage = document.getElementById('imagePreview').src;
-
-    const existingCrop = crops.find(crop => crop.cropId === cropId);
-
-    if (existingCrop) {
-        // Update crop
-        existingCrop.specialName = specialName;
-        existingCrop.commonName = commonName;
-        existingCrop.category = category;
-        existingCrop.fieldId = fieldId;
-        existingCrop.season = season;
-        existingCrop.image = cropImage;
-        showNotification('Crop updated successfully!', 'success');
-    } else {
-        // Add new crop
-        const newCrop = { cropId, specialName, commonName, category, fieldId, season, image: cropImage };
-        crops.push(newCrop);
-        showNotification('Crop added successfully!', 'success');
-    }
-
-    saveData(); // Save to localStorage
-    renderCrops(); // Update UI
-    closeCropModal();
+    const token = getCookie("token");
+    const cropId = document.getElementById('cropId').value;
+    cropId === "" ? saveNewCrop(token) : updateCrop(token);
 }
 
-// Render Crops
-function renderCrops(filteredCrops = crops) {
-    const tableBody = document.getElementById('cropTableBody');
-    tableBody.innerHTML = ''; // Clear existing rows
+const getCropFromData = () => ({
+    cropId: document.getElementById('cropId').value,
+    cropScientificName: document.getElementById('specialName').value,
+    cropCommonName: document.getElementById('commonName').value,
+    category: document.getElementById('category').value,
+    fieldCode: document.getElementById('fieldSelect').value,
+    cropSeason: document.getElementById('season').value
+});
 
-    if (filteredCrops.length === 0) {
-        tableBody.innerHTML = `
-            <tr>
-                <td colspan="8" class="no-results">
-                    <i class="fas fa-seedling"></i>
-                    <p>No crops found. Add crops to get started.</p>
-                </td>
-            </tr>
-        `;
+const validateCropForm = (cropData) => {
+    return Object.values(cropData).every(field => field !== "");
+};
+
+const saveNewCrop = (token) => {
+    const cropData = getCropFromData();
+    ajaxRequest(
+        "http://localhost:8089/gs/api/v1/crops",
+        "POST",
+        cropData,
+        token,
+        (response) => {
+            uploadImage(token, response.cropCode);
+            showNotification('Crop added successfully!', 'success');
+            closeCropModal();
+            getAllCrops(token);
+
+        },
+        (error) => {
+            console.error('Error saving crop:', error);
+            showNotification('Failed to save crop', 'error');
+        }
+    );
+};
+
+const updateCrop = (token) => {
+    const cropCode = document.getElementById('cropId').value;
+    const cropData = getCropFromData();
+
+    if (!validateCropForm(cropData)) {
+        showNotification('Please fill in all required fields.', 'error');
         return;
     }
 
-    const fields = getFields();
+    ajaxRequest(
+        `http://localhost:8089/gs/api/v1/crops/${cropCode}`,
+        "PUT",
+        cropData,
+        token,
+        () => {
+            uploadImage(token, cropCode);
+            showNotification('Crop updated successfully!', 'success');
+            getAllCrops(token);
+            // renderCrops(token);
+            closeCropModal();
+        },
+        (error) => {
+            console.error('Error updating crop:', error);
+            showNotification('Failed to update crop', 'error');
+        }
+    );
+};
 
-    filteredCrops.forEach(crop => {
-        const field = fields.find(f => f.id === crop.fieldId); // Get the field name for this crop
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${crop.cropId}</td>
-            <td>${crop.specialName}</td>
-            <td>${crop.commonName}</td>
-            <td>${crop.category}</td>
-            <td>${field ? field.name : 'Unknown'}</td>
-            <td>${crop.season}</td>
-            <td>
-               <div class="action-buttons">
-                  <button onclick="openCropModal(${JSON.stringify(crop).replace(/"/g, '&quot;')})" class="edit-btn" title="Edit">
-                     <i class="fas fa-edit"></i>
-                  </button>
-                  <button onclick="deleteCrop('${crop.cropId}')" class="delete-btn" title="Delete">
-                     <i class="fas fa-trash"></i>
-                  </button>
-                  <button onclick="viewCropDetails('${crop.cropId}')" class="view-btn" title="View Details">
-                     <i class="fas fa-eye"></i>
-                  </button>
-               </div>
+const uploadImage = (token, cropCode) => {
+    const imageInput = document.getElementById('cropImage');
+    const formData = new FormData();
+    formData.append('cropCode', cropCode);
+    formData.append('image', imageInput.files[0]);
+
+    $.ajax({
+        url: `http://localhost:8089/gs/api/v1/crops`,
+        type: 'POST',
+        headers: {
+            "Authorization": `Bearer ${token}`
+        },
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: () => {
+            showNotification('Image uploaded successfully!', 'success');
+        },
+        error: (error) => {
+            console.error('Error uploading image:', error);
+        }
+    })
+};
+
+const getAllCrops = (token) => {
+    ajaxRequest(
+        "http://localhost:8089/gs/api/v1/crops",
+        "GET",
+        null,
+        token,
+        (response) => {
+            renderCrops(cropsData = response);
+        },
+        (error) => {
+            console.error('Error loading crops:', error);
+            showNotification('Failed to load crops', 'error');
+        }
+    )
+}
+
+const renderCrops = (filteredCrops = [] = cropsData) => {
+    const tableBody = document.getElementById('cropTableBody');
+    tableBody.innerHTML = '';
+    if (!filteredCrops.length) {
+        const emptyRow = document.createElement('tr');
+        emptyRow.innerHTML = `
+            <td colspan="8" class="no-results">
+                <i class="fas fa-seedling"></i>
+                <p>No crops found. Add crops to get started.</p>
             </td>
         `;
-        tableBody.appendChild(row);
-    });
-}
-
-// Crop Search
-function initializeCropSearchBar() {
-    const searchInput = document.querySelector('.search-bar input');
-    if (!searchInput) {
-        console.error("Search input element not found. Verify your HTML.");
+        tableBody.appendChild(emptyRow);
         return;
     }
 
-    searchInput.addEventListener('input', (e) => {
-        const searchTerm = e.target.value.toLowerCase();
-        const filteredCrops = crops.filter(crop =>
-            crop.specialName.toLowerCase().includes(searchTerm) ||
-            crop.commonName.toLowerCase().includes(searchTerm) ||
-            crop.category.toLowerCase().includes(searchTerm)
-        );
-        renderCrops(filteredCrops);
+    filteredCrops.forEach(crop => {
+        const fieldName = getFieldName(crop.fieldCode);
+        const row = document.createElement('tr');
+
+
+        row.innerHTML = `
+        <td title="${crop.cropCode}">${getFriendlyCropId(crop.cropCode)}</td>
+        <td>${crop.cropScientificName}</td>
+        <td>${crop.cropCommonName}</td>
+        <td>${crop.category}</td>
+        <td>${fieldName}</td>
+        <td>${crop.cropSeason}</td>
+        <td>
+           <div class="action-buttons">
+              <button onclick="openCropModal(${JSON.stringify(crop).replace(/"/g, '&quot;')})" class="edit-btn" title="Edit">
+                 <i class="fas fa-edit"></i>
+              </button>
+              <button onclick="viewCropDetails('${crop.cropCode}')" class="view-btn" title="View Details">
+                 <i class="fas fa-eye"></i>
+              </button>
+           </div>
+        </td>
+    `;
+        tableBody.appendChild(row);
     });
+
+};
+
+
+function initializeCropSearchBar() {
+    const searchInput = document.getElementById('cropSearch');
+    searchInput.addEventListener('input', (e ) => {
+        const searchTerm = e.target.value.toLowerCase();
+        const filteredCrop = cropsData.filter(crop =>
+            crop.cropCode.toLowerCase().includes(searchTerm) ||
+            crop.cropScientificName.toLowerCase().includes(searchTerm) ||
+            crop.cropCommonName.toLowerCase().includes(searchTerm) ||
+            crop.category.toLowerCase().includes(searchTerm)
+
+        );
+        renderCrops(filteredCrop);
+    })
 }
 
-// Delete Crop
-function deleteCrop(cropId) {
-    const index = crops.findIndex(crop => crop.cropId === cropId);
+function viewCropDetails(cropCode) {
+    console.log(cropCode)
+   const crop = cropsData.find(crop => crop.cropCode === cropCode);
+   if(crop){
+       document.getElementById('viewCropId').textContent = crop.cropCode;
+       document.getElementById('viewSpecialName').textContent = crop.cropScientificName;
+       document.getElementById('viewCommonName').textContent = crop.cropCommonName;
+       document.getElementById('viewCategory').textContent = crop.category;
+       document.getElementById('viewField').textContent = getFieldName(crop.fieldCode);
+       document.getElementById('viewSeason').textContent = crop.cropSeason;
 
-    if (confirm("Are you sure you want to delete this crop?") && index > -1) {
-        crops.splice(index, 1); // Remove crop from array
-        showNotification('Crop deleted successfully!', 'error');
-
-        saveData(); // Save changes to localStorage
-        renderCrops(); // Update UI
-    }
+       if(crop.cropImage){
+           const imagePreview = document.getElementById('viewCropImage');
+           imagePreview.src = `data:image/jpeg;base64,${crop.cropImage}`;
+           imagePreview.style.display = 'block';
+       }
+       document.getElementById('viewCropModal').style.display = 'block';
+   }
 }
 
-// Notification Function
-function showNotification(message, type) {
-    const notificationContainer = document.getElementById('notificationContainer');
-    const notification = document.createElement('div');
-    notification.classList.add('notification', type);
-    notification.textContent = message;
-
-    notificationContainer.appendChild(notification);
-
-    setTimeout(() => {
-        notification.remove();
-    }, 3000);
-}
-// View Crop Details
-function viewCropDetails(cropId) {
-    const crop = crops.find(c => c.cropId === cropId);
-    if (crop) {
-        document.getElementById('viewCropId').textContent = crop.cropId;
-        document.getElementById('viewSpecialName').textContent = crop.specialName;
-        document.getElementById('viewCommonName').textContent = crop.commonName;
-        document.getElementById('viewCategory').textContent = crop.category;
-        document.getElementById('viewField').textContent = crop.fieldId;
-        document.getElementById('viewSeason').textContent = crop.season;
-
-        // Ensure the image is shown in the modal
-        const imageElement = document.getElementById('viewCropImage');
-        if (crop.image) {
-            imageElement.src = crop.image;
-            imageElement.style.display = 'block'; // Make the image visible
-        } else {
-            imageElement.style.display = 'none'; // Hide the image if none exists
-        }
-
-        // Show the modal
-        document.getElementById('viewCropModal').style.display = 'block';
-    }
-}
-
-
-// Close View Crop Modal
 function closeViewCropModal() {
     document.getElementById('viewCropModal').style.display = 'none';
 }
 
 
-// Initialize on page load
 window.onload = function () {
-    loadData(); // Load saved data
-    renderCrops(); // Render initial crops table
-    initializeCropSearchBar(); // Setup search bar
+    const token = getCookie("token");
+    renderCrops();
+    initializeCropSearchBar();
+    loadFieldOptions(token);
+    getAllCrops(token);
 };
+function getFriendlyCropId(cropCode) {
+    const parts = cropCode.split('-');
+    const prefix = parts[0];
+    const shortUUID = parts[1].substring(0, 6);
+    return `${prefix} (${shortUUID})`;
+}

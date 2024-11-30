@@ -273,11 +273,11 @@ function displayFieldData(dataToDisplay = fieldData) {
         const locationText = field.fieldLocation ? field.fieldLocation.x + ", " + field.fieldLocation.y : "";
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td>${field.fieldCode}</td>
+            <td title ="${field.fieldCode}">${getFriendlyFieldCode(field.fieldCode)}</td>
             <td>${field.fieldName}</td>
             <td>${locationText}</td>
             <td>${field.extentSizeOfField}</td>
-            <td>${field.logCode}</td>
+           <td title="${field.logCode}">${getFriendlyLogId(field.logCode)}</td>
             <td class="action-buttons">
                 <button class="action-btn view-btn" onclick="viewFieldDetails('${field.fieldCode}')">
                     <i class="fas fa-eye"></i>
@@ -295,22 +295,24 @@ function displayFieldData(dataToDisplay = fieldData) {
 }
 
 function deleteField(fieldCode) {
-    const token = getCookie("token");
-    $.ajax({
-        url: `http://localhost:8089/gs/api/v1/fields/${fieldCode}`,
-        type: "DELETE",
-        headers: {
-            "Authorization": `Bearer ${token}`
-        },
-        success: () => {
-            showNotification('Field deleted successfully', 'success');
-            loadFieldTable(token);
-        },
-        error: (error) => {
-            console.error('Error deleting field:', error);
-            showNotification('Failed to delete field', 'error');
-        }
-    });
+    if (confirm('Are you sure you want to delete this field?')) {
+        const token = getCookie("token");
+        $.ajax({
+            url: `http://localhost:8089/gs/api/v1/fields/${fieldCode}`,
+            type: "DELETE",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            },
+            success: () => {
+                showNotification('Field deleted successfully', 'success');
+                loadFieldTable(token);
+            },
+            error: (error) => {
+                console.error('Error deleting field:', error);
+                showNotification('Failed to delete field', 'error');
+            }
+        });
+    }
 }
 
 function editField(fieldCode) {
@@ -420,5 +422,18 @@ const getValuesFromForm = () => {
         logCode,
         fieldLocation
     }
+}
+function getFriendlyLogId(logCode) {
+    const parts = logCode.split('-');
+    const prefix = parts[0];
+    const shortUUID = parts[1].substring(0, 6);
+    return `${prefix} (${shortUUID})`;
+
+}
+function getFriendlyFieldCode(fieldCode) {
+    const parts = fieldCode.split('-');
+    const prefix = parts[0];
+    const shortUUID = parts[1].substring(0, 6);
+    return `${prefix} (${shortUUID})`;
 }
 

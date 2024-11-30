@@ -213,7 +213,7 @@ function displayStaffData(dataToDisplay = staffData) {
     dataToDisplay.forEach(staff => {
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td>${staff.id}</td>
+            <td title="${staff.id}">${getFriendlyStaffId(staff.id)}</td>
             <td>${staff.firstName} ${staff.lastName}</td>
             <td>${staff.designation}</td>
             <td>${staff.contactNumber}</td>
@@ -373,4 +373,9 @@ const getValues = () => {
     };
 }
 
-
+function getFriendlyStaffId(staffId) {
+    const parts = staffId.split('-');
+    const prefix = parts[0];
+    const shortUUID = parts[1].substring(0, 6);
+    return `${prefix} (${shortUUID})`;
+}

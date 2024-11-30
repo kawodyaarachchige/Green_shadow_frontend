@@ -199,11 +199,12 @@ function filterByDates(token) {
 }
 
 
-function getFriendlyLogId(complexLogId) {
-    if (!logIdMap.has(complexLogId)) {
-        logIdMap.set(complexLogId, logCounter++);
-    }
-    return `LOG-${String(logIdMap.get(complexLogId)).padStart(4, '0')}`;
+function getFriendlyLogId(logCode) {
+    const parts = logCode.split('-');
+    const prefix = parts[0];
+    const shortUUID = parts[1].substring(0, 6);
+    return `${prefix} (${shortUUID})`;
+
 }
 
 function getLogFormData() {
