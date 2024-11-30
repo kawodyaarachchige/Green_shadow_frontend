@@ -72,7 +72,7 @@
             </header>
             <div class="search-bar">
                 <i class="fas fa-search "></i>
-                <input type="text" placeholder="Search fields by location...">
+                <input type="text" id ="searchInput"  placeholder="Search fields by location...">
             </div>
             <div class="field-list">
                 <table class="field-table">
@@ -99,7 +99,7 @@
                 <form id="fieldForm" onsubmit="handleFieldFormSubmit(event)">
 
                     <div class="form-group">
-                        <label for="fieldId">Field Code</label>
+                            <label for="fieldId">Field Code</label>
                         <input type="text" id="fieldId" disabled>
                     </div>
 
@@ -107,10 +107,15 @@
                         <label for="fieldName">Field Name</label>
                         <input type="text" id="fieldName" required>
                     </div>
-                    <div class="form-group">
-                        <label for="location">Select Location</label>
-                        <div id="map" style="height: 300px; border-radius: 8px; margin-bottom: 15px;"></div>
-                        <input type="text" id="location" placeholder="Location" readonly>
+                    <div id="map" style="height: 300px; border-radius: 8px; margin-bottom: 15px;">
+                        <div class="form-group">
+                            <label for="latitude-input">Select Location</label>
+                            <input type="text" id="latitude-input" required readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="longitude-input">Select Location</label>
+                            <input type="text" id="longitude-input" required readonly>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="fieldSize">Extent Size</label>
@@ -146,7 +151,6 @@
                 <h2>Field Details</h2>
                 <p><strong>ID:</strong> <span id="viewFieldId"></span></p>
                 <p><strong>Name:</strong> <span id="viewFieldName"></span></p>
-                <p><strong>Location:</strong> <span id="viewFieldLocation"></span></p>
                 <p><strong>Size:</strong> <span id="viewFieldSize"></span></p>
                 <p><strong>Log:</strong> <span id="viewFieldLog"></span></p>
                 <img id="viewFieldImage1" style="display: none; max-width: 100%; border-radius: 8px; margin-top: 10px;">

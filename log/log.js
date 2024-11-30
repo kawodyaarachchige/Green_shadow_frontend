@@ -248,7 +248,8 @@ function populateLogForm(logId, logDate, logDescription) {
 function resetLogForm() {
     document.getElementById("logForm").reset();
     document.getElementById("logId").value = "";
-} function closeLogModal() {
+}
+function closeLogModal() {
     const modal = document.getElementById('logModal');
     modal.style.display = 'none';
     resetLogForm();

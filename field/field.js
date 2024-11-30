@@ -6,31 +6,32 @@ document.addEventListener('DOMContentLoaded', () => {
     const token = getCookie("token");
     loadFieldTable(token);
     loadLogSelector(token);
-    initializeMap();
     initializeSearch();
+
+    window.globalMap = L.map('map').setView([7.8731, 80.7718], 7);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(window.globalMap);
+
+    let selectedMarker;
+
+    window.globalMap.on('click', (event) => {
+        const lat = event.latlng.lat;
+        const lng = event.latlng.lng;
+
+        document.getElementById('latitude-input').value = lat;
+        document.getElementById('longitude-input').value = lng;
+
+        if (selectedMarker) {
+            window.globalMap.removeLayer(selectedMarker);
+        }
+        selectedMarker = L.marker([lat, lng])
+            .addTo(window.globalMap)
+            .bindPopup("Selected Location")
+            .openPopup();
+    });
 });
-
-// Map Functions
-function initializeMap() {
-    if (!map) {
-        map = L.map('map').setView([7.8731, 80.7718], 7);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '© OpenStreetMap contributors'
-        }).addTo(map);
-
-        map.on('click', (e) => {
-            const { lat, lng } = e.latlng;
-            document.getElementById('location').value = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
-
-            if (currentMarker) {
-                currentMarker.setLatLng(e.latlng);
-            } else {
-                currentMarker = L.marker(e.latlng).addTo(map);
-            }
-        });
-    }
-}
 
 function setLocation(lat, lng) {
     if (map) {
@@ -48,7 +49,6 @@ function clearMarker() {
     }
 }
 
-// Image Functions
 function previewImage1(event) {
     const preview = document.getElementById('imagePreview1');
     const file = event.target.files[0];
@@ -119,12 +119,18 @@ function handleFieldFormSubmit(event) {
 
     const fieldData = {
         fieldName: document.getElementById('fieldName').value,
-        location: document.getElementById('location').value,
-        extentSize: document.getElementById('fieldSize').value,
-        logCode: document.getElementById('fieldLog').value
+        fieldLocation: {
+            x: document.getElementById('latitude-input').value,
+            y: document.getElementById('longitude-input').value
+        },
+        extentSizeOfField: document.getElementById('fieldSize').value,
+        logCode: document.getElementById('fieldLog').value,
+        fieldImage: document.getElementById('fieldImage').value,
+        fieldImage2:document.getElementById('fieldImage2').value
     };
 
-    if (!fieldData.fieldName || !fieldData.location || !fieldData.extentSize || !fieldData.logCode) {
+
+    if (!fieldData.fieldName  || !fieldData.extentSizeOfField || !fieldData.logCode) {
         showNotification('Please fill in all required fields', 'error');
         return;
     }
@@ -133,10 +139,14 @@ function handleFieldFormSubmit(event) {
         updateField(token, fieldCode, fieldData);
     } else {
         saveField(token, fieldData);
+
+
     }
 }
 
 function saveField(token, fieldData) {
+    const valuesFromForm = getValuesFromForm();
+
     $.ajax({
         url: "http://localhost:8089/gs/api/v1/fields",
         type: "POST",
@@ -144,8 +154,9 @@ function saveField(token, fieldData) {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${token}`
         },
-        data: JSON.stringify(fieldData),
-        success: async () => {
+        data: JSON.stringify(valuesFromForm),
+        success: async (response) => {
+            fieldData.fieldCode = response.fieldCode;
             await handleImageUpload(token, fieldData.fieldCode);
             showNotification('Field saved successfully', 'success');
             closeFieldModal();
@@ -184,22 +195,27 @@ async function handleImageUpload(token, fieldCode) {
     const image1 = document.getElementById('fieldImage').files[0];
     const image2 = document.getElementById('fieldImage2').files[0];
 
-    if (image1 && image2) {
+    console.log(token, fieldCode, image1, image2);
+    if (image1 || image2) {
         const formData = new FormData();
         formData.append('fieldCode', fieldCode);
         formData.append('image1', image1);
         formData.append('image2', image2);
 
         try {
-            await $.ajax({
-                url: "http://localhost:8089/gs/api/v1/fields",
+             $.ajax({
+                url: `http://localhost:8089/gs/api/v1/fields`,
                 type: "POST",
                 headers: {
                     "Authorization": `Bearer ${token}`
                 },
                 data: formData,
                 processData: false,
-                contentType: false
+                contentType: false,
+                success: () => {
+                    console.log("Images uploaded successfully");
+                    loadFieldTable(token)
+                }
             });
         } catch (error) {
             console.error('Error uploading images:', error);
@@ -209,11 +225,10 @@ async function handleImageUpload(token, fieldCode) {
 }
 
 function initializeSearch() {
-    const searchInput = document.querySelector('.search-bar input');
+    const searchInput = document.getElementById('searchInput');
     searchInput.addEventListener('input', (e) => {
         const searchTerm = e.target.value.toLowerCase();
         const filteredFields = fieldData.filter(field =>
-            field.location.toLowerCase().includes(searchTerm) ||
             field.fieldName.toLowerCase().includes(searchTerm)
         );
         displayFieldData(filteredFields);
@@ -255,11 +270,12 @@ function displayFieldData(dataToDisplay = fieldData) {
     }
 
     dataToDisplay.forEach(field => {
+        const locationText = field.fieldLocation ? field.fieldLocation.x + ", " + field.fieldLocation.y : "";
         const row = document.createElement('tr');
         row.innerHTML = `
             <td>${field.fieldCode}</td>
             <td>${field.fieldName}</td>
-            <td>${field.fieldLocation}</td>
+            <td>${locationText}</td>
             <td>${field.extentSizeOfField}</td>
             <td>${field.logCode}</td>
             <td class="action-buttons">
@@ -300,16 +316,14 @@ function deleteField(fieldCode) {
 function editField(fieldCode) {
     const field = fieldData.find(f => f.fieldCode === fieldCode);
     if (field) {
+
         openFieldModal();
         document.getElementById('fieldId').value = field.fieldCode;
         document.getElementById('fieldName').value = field.fieldName;
-        document.getElementById('location').value = field.fieldLocation;
+        document.getElementById('latitude-input').value = field.fieldLocation.x;
+        document.getElementById('longitude-input').value = field.fieldLocation.y;
         document.getElementById('fieldSize').value = field.extentSizeOfField;
         document.getElementById('fieldLog').value = field.logCode;
-
-        const [lat, lng] = field.fieldLocation.split(',').map(coord => parseFloat(coord.trim()));
-        setLocation(lat, lng);
-
         document.getElementById('modalTitle').textContent = 'Edit Field';
     }
 }
@@ -319,8 +333,7 @@ function viewFieldDetails(fieldCode) {
     if (field) {
         document.getElementById('viewFieldId').textContent = field.fieldCode;
         document.getElementById('viewFieldName').textContent = field.fieldName;
-        document.getElementById('viewFieldLocation').textContent = field.location;
-        document.getElementById('viewFieldSize').textContent = field.extentSize;
+        document.getElementById('viewFieldSize').textContent = field.extentSizeOfField;
         document.getElementById('viewFieldLog').textContent = field.logCode;
 
         if (field.image1) {
@@ -361,7 +374,6 @@ function closeViewMoreModal() {
 function clearForm() {
     document.getElementById('fieldId').value = '';
     document.getElementById('fieldName').value = '';
-    document.getElementById('location').value = '';
     document.getElementById('fieldSize').value = '';
     document.getElementById('fieldLog').value = '';
     document.getElementById('fieldImage').value = '';
@@ -380,3 +392,33 @@ window.closeFieldModal = closeFieldModal;
 window.closeViewMoreModal = closeViewMoreModal;
 window.previewImage1 = previewImage1;
 window.previewImage2 = previewImage2;
+
+
+const getValuesFromForm = () => {
+    const fieldCode = document.getElementById("fieldId").value;
+    const fieldName = document.getElementById("fieldName").value;
+    const extentSizeOfField = document.getElementById("fieldSize").value;
+    const logCode = document.getElementById("fieldLog").value;
+
+    const latitude = document.getElementById("latitude-input").value;
+    const longitude = document.getElementById("longitude-input").value;
+
+    let fieldLocation={
+        x : parseFloat(latitude),
+        y : parseFloat(longitude)
+    }
+
+    if(!fieldName || !extentSizeOfField || !logCode) {
+        console.log("Input all fields to continue")
+        return;
+    }
+
+    return {
+        fieldCode,
+        fieldName,
+        extentSizeOfField,
+        logCode,
+        fieldLocation
+    }
+}
+
