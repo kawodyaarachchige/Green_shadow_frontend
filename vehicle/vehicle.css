@@ -21,29 +21,8 @@
     font-size: 1rem;
 }
 
-.search-bar {
-    position: relative;
-    margin-bottom: 2rem;
-}
-
-.search-bar input {
-    width: 100%;
-    padding: 0.8rem 1rem 0.8rem 2.5rem;
-    border: 1px solid #e2e8f0;
-    border-radius: 0.5rem;
-    font-size: 1rem;
-}
-
-.search-bar i {
-    position: absolute;
-    left: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #a0aec0;
-}
-
 /* Table Styles */
-.vehicle-table , .field-table {
+.vehicle-table  {
     background: white;
     border-radius: 0.5rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -55,13 +34,13 @@
     margin-bottom: 1rem;
 }
 
-#vehicle-list , .field-list  {
+#vehicle-list  {
     width: 100%;
     border-collapse: collapse;
 }
 
 #vehicle-list th,
-#vehicle-list td ,.field-table th, .field-table td {
+#vehicle-list td  {
     padding: 1rem;
     text-align: left;
     border-bottom: 1px solid #e2e8f0;
