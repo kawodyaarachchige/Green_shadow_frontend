@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
             contentType: 'application/json',
             success: (response) => {
                 document.cookie = `token=${response.token}; path=/; secure;`;
-                document.cookie = `user=${email}; path=/; secure;`;
+                document.cookie = `userGreenShadow=${email}; path=/; secure;`;
                 window.location.href = 'dashboard/dashboard.html';
             },
             error: (xhr) => {

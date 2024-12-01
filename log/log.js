@@ -262,3 +262,7 @@ function closeLogModal() {
     modal.style.display = 'none';
     resetLogForm();
 }
+function closeImageModal() {
+    const modal = document.getElementById('imageModal');
+    modal.style.display = 'none';
+}

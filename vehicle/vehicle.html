@@ -42,13 +42,17 @@
                 <i class="fas fa-tools"></i>
                 <span>Equipment</span>
             </a>
-            <a href="#" class="nav-item active" data-section="vehicles">
+            <a href="../vehicle/vehicle.html" class="nav-item active" data-section="vehicles">
                 <i class="fas fa-truck"></i>
                 <span>Vehicles</span>
             </a>
-            <a href="#" class="nav-item" data-section="logs">
+            <a href="../log/log.html" class="nav-item" data-section="logs">
                 <i class="fas fa-clipboard-list"></i>
                 <span>Logs</span>
+            </a>
+            <a href="../setting/setting.html" class="nav-item" data-section="settings">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
             </a>
         </nav>
         <a href="../index.html">
@@ -57,10 +61,6 @@
                 <span>Logout</span>
             </button>
         </a>
-        <button class="setting-btn">
-            <i class="fas fa-cog"></i>
-            <span>Settings</span>
-        </button>
     </aside>
     <main class="main-content">
         <div id="vehicle_management" class="vehicle-management">
@@ -109,7 +109,7 @@
                     <input type="hidden" id="vehicleId">
                     <div class="form-group">
                         <label for="licenNo">License Number:</label>
-                        <input type="text" id="licenNo" placeholder="Enter license number" required />
+                        <input type="text" id="licenNo" placeholder="Enter license number" required/>
                     </div>
                     <div class="form-group">
                         <label for="category">Category:</label>
@@ -139,9 +139,8 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="staffIdOnVehicle">Staff ID:</label>
+                        <label for="staffIdOnVehicle">Staff Member:</label>
                         <select id="staffIdOnVehicle" required>
-                            <!-- Will be populated dynamically -->
                         </select>
                     </div>
                     <div class="form-group">

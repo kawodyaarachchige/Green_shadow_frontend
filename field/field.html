@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta  name="description" content="Green Shadow - crop monitoring system">
-    <meta  name="author" content="Tharu Arachchige">
+    <meta name="description" content="Green Shadow - crop monitoring system">
+    <meta name="author" content="Tharu Arachchige">
     <title>Field Management</title>
     <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="../assets/style/modal.css">
@@ -43,25 +43,25 @@
                 <i class="fas fa-tools"></i>
                 <span>Equipment</span>
             </a>
-            <a href="#" class="nav-item" data-section="vehicles">
+            <a href="../vehicle/vehicle.html" class="nav-item" data-section="vehicles">
                 <i class="fas fa-truck"></i>
                 <span>Vehicles</span>
             </a>
-            <a href="#" class="nav-item" data-section="logs">
+            <a href="../log/log.html" class="nav-item" data-section="logs">
                 <i class="fas fa-clipboard-list"></i>
                 <span>Logs</span>
             </a>
+            <a href="../setting/setting.html" class="nav-item" data-section="settings">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </a>
         </nav>
         <a href="../index.html">
-        <button class="logout-btn">
-            <i class="fas fa-sign-out-alt"></i>
-            <span>Logout</span>
-        </button>
+            <button class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
         </a>
-        <button class="setting-btn">
-            <i class="fas fa-cog"></i>
-            <span>Settings</span>
-        </button>
     </aside>
     <main class="main-content">
         <div class="field-management">
@@ -73,7 +73,7 @@
             </header>
             <div class="search-bar">
                 <i class="fas fa-search "></i>
-                <input type="text" id ="searchInput"  placeholder="Search fields by location...">
+                <input type="text" id="searchInput" placeholder="Search fields by location...">
             </div>
             <div class="field-list">
                 <table class="field-table">
@@ -100,7 +100,7 @@
                 <form id="fieldForm" onsubmit="handleFieldFormSubmit(event)">
 
                     <div class="form-group">
-                            <label for="fieldId">Field Code</label>
+                        <label for="fieldId">Field Code</label>
                         <input type="text" id="fieldId" disabled>
                     </div>
 
@@ -124,8 +124,8 @@
                     </div>
                     <div class="form-group">
                         <label for="fieldLog">Log</label>
-                      <select id="fieldLog" required>
-                      </select>
+                        <select id="fieldLog" required>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="fieldImage">Field Image 1</label>

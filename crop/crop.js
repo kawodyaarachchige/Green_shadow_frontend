@@ -7,6 +7,8 @@ document.addEventListener('DOMContentLoaded', function () {
     getAllCrops(token);
     initializeCropSearchBar();
     loadFieldOptions(token);
+    loadlogSelector(token);
+    viewCropDetails();
 });
 
 const ajaxRequest = (url, method, data, token, successCallback, errorCallback) => {
@@ -41,7 +43,7 @@ const loadFieldOptions = (token) => {
                 option.textContent = field.fieldName;
                 fieldSelect.appendChild(option);
 
-                fieldMap[field.fieldCode] = field.fieldName;
+
             });
 
             console.log('Updated Field Map:', fieldMap);
@@ -53,11 +55,29 @@ const loadFieldOptions = (token) => {
     );
 
 };
-const getFieldName = (fieldCode) => {
-    if (fieldMap[fieldCode]) {
-        return fieldMap[fieldCode];
-    }
-};
+const loadlogSelector = (token) => {
+    const logSelector = document.getElementById("logSelect");
+
+    $.ajax({
+        url: "http://localhost:8089/gs/api/v1/logs",
+        type: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        },
+        success: (data) => {
+            data.forEach((log) => {
+                const option = document.createElement("option");
+                option.value = log.logCode;
+                option.textContent = log.logDetails;
+                logSelector.appendChild(option);
+            });
+        },
+        error: (error) => {
+            console.log("Something went wrong:", error);
+        }
+    });
+}
 
 function openCropModal(crop = null) {
     document.getElementById('cropModal').style.display = 'block';
@@ -133,6 +153,7 @@ const saveNewCrop = (token) => {
         token,
         (response) => {
             uploadImage(token, response.cropCode);
+            saveLogForCrop(token,response.cropCode);
             showNotification('Crop added successfully!', 'success');
             closeCropModal();
             getAllCrops(token);
@@ -144,6 +165,33 @@ const saveNewCrop = (token) => {
         }
     );
 };
+
+const saveLogForCrop = (token,cropCode) => {
+    const selectedLog = document.getElementById("logSelect").value;
+    if (selectedLog) {
+        const formData = new FormData();
+        formData.append("logCode", selectedLog);
+        formData.append("cropCode", cropCode);
+
+       $.ajax({
+           url: "http://localhost:8089/gs/api/v1/crops/log",
+           type: "POST",
+           headers: {
+               "Authorization": `Bearer ${token}`
+           },
+           contentType: false,
+           processData: false,
+           data: formData,
+           success: () => {
+               console.log("Log saved successfully");
+           },
+           error: (error) => {
+               console.error(error.responseText);
+               showNotification(error.responseText);
+           }
+       })
+    }
+}
 
 const updateCrop = (token) => {
     const cropCode = document.getElementById('cropId').value;
@@ -161,6 +209,7 @@ const updateCrop = (token) => {
         token,
         () => {
             uploadImage(token, cropCode);
+            saveLogForCrop(token,cropCode);
             showNotification('Crop updated successfully!', 'success');
             getAllCrops(token);
             // renderCrops(token);
@@ -230,7 +279,6 @@ const renderCrops = (filteredCrops = [] = cropsData) => {
     }
 
     filteredCrops.forEach(crop => {
-        const fieldName = getFieldName(crop.fieldCode);
         const row = document.createElement('tr');
 
 
@@ -239,7 +287,7 @@ const renderCrops = (filteredCrops = [] = cropsData) => {
         <td>${crop.cropScientificName}</td>
         <td>${crop.cropCommonName}</td>
         <td>${crop.category}</td>
-        <td>${fieldName}</td>
+        <td>${crop.fieldCode}</td>
         <td>${crop.cropSeason}</td>
         <td>
            <div class="action-buttons">
@@ -274,27 +322,36 @@ function initializeCropSearchBar() {
 }
 
 function viewCropDetails(cropCode) {
-    console.log(cropCode)
-   const crop = cropsData.find(crop => crop.cropCode === cropCode);
-   if(crop){
-       document.getElementById('viewCropId').textContent = crop.cropCode;
-       document.getElementById('viewSpecialName').textContent = crop.cropScientificName;
-       document.getElementById('viewCommonName').textContent = crop.cropCommonName;
-       document.getElementById('viewCategory').textContent = crop.category;
-       document.getElementById('viewField').textContent = getFieldName(crop.fieldCode);
-       document.getElementById('viewSeason').textContent = crop.cropSeason;
+    console.log(cropCode);
+    const crop = cropsData.find(crop => crop.cropCode === cropCode);
+    if (crop) {
+        document.getElementById('viewCropId').textContent = crop.cropCode;
+        document.getElementById('viewSpecialName').textContent = crop.cropScientificName;
+        document.getElementById('viewCommonName').textContent = crop.cropCommonName;
+        document.getElementById('viewCategory').textContent = crop.category;
+        document.getElementById('viewField').textContent = crop.fieldCode;
+        document.getElementById('viewSeason').textContent = crop.cropSeason;
 
-       if(crop.cropImage){
-           const imagePreview = document.getElementById('viewCropImage');
-           imagePreview.src = `data:image/jpeg;base64,${crop.cropImage}`;
-           imagePreview.style.display = 'block';
-       }
-       document.getElementById('viewCropModal').style.display = 'block';
-   }
+        const imagePreview = document.getElementById('viewCropImage');
+        if (crop.cropImage) {
+            imagePreview.src = `data:image/jpeg;base64,${crop.cropImage}`;
+            imagePreview.style.display = 'block';
+        } else {
+            imagePreview.src = ''; // Clear the src if no image is available
+            imagePreview.style.display = 'none';
+        }
+
+        document.getElementById('viewCropModal').style.display = 'block';
+    }
 }
+
 
 function closeViewCropModal() {
     document.getElementById('viewCropModal').style.display = 'none';
+    const imagePreview = document.getElementById('viewCropImage');
+    imagePreview.src = '';
+    imagePreview.style.display = 'none';
+
 }
 
 

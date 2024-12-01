@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta  name="description" content="Green Shadow - crop monitoring system">
-    <meta  name="author" content="Tharu Arachchige">
+    <meta name="description" content="Green Shadow - crop monitoring system">
+    <meta name="author" content="Tharu Arachchige">
     <title>Equipment Management</title>
     <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="../assets/style/modal.css">
@@ -47,21 +47,21 @@
                 <i class="fas fa-truck"></i>
                 <span>Vehicles</span>
             </a>
-            <a href="#" class="nav-item" data-section="logs">
+            <a href="../log/log.html" class="nav-item" data-section="logs">
                 <i class="fas fa-clipboard-list"></i>
                 <span>Logs</span>
             </a>
+            <a href="../setting/setting.html" class="nav-item" data-section="settings">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </a>
         </nav>
         <a href="../index.html">
-        <button class="logout-btn">
-            <i class="fas fa-sign-out-alt"></i>
-            <span>Logout</span>
-        </button>
+            <button class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
         </a>
-        <button class="setting-btn">
-            <i class="fas fa-cog"></i>
-            <span>Settings</span>
-        </button>
     </aside>
     <main class="main-content">
         <div class="equipment-management">
@@ -74,7 +74,7 @@
             </header>
             <div class="search-bar">
                 <i class="fas fa-search "></i>
-                <input type="text" placeholder="Search equipment...">
+                <input type="text" id="equipmentSearch" placeholder="Search equipment...">
             </div>
             <div class="equipment-list">
                 <table class="equipment-table">
@@ -128,7 +128,7 @@
                     </div>
                     <div class="form-group">
                         <label for="equipmentStaff">Assigned Staff</label>
-                        <select id="equipmentStaff" >
+                        <select id="equipmentStaff">
                         </select>
                     </div>
                     <button type="submit" class="submit-btn">Save Equipment</button>

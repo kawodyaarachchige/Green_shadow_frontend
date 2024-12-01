@@ -1,4 +1,5 @@
 let vehicleData = [];
+let staffMap = {};
 
 document.addEventListener('DOMContentLoaded', () => {
     const token = getCookie("token");

@@ -1,12 +1,29 @@
 let equipmentData = [];
+let fieldMap = {};
+let staffMap = {};
 
 document.addEventListener('DOMContentLoaded', () => {
     const token = getCookie("token");
-    loadFieldSelector(token);
-    loadStaffSelector(token);
-  getAllEquipment(token);
-    //initializeSearch();
+
+    Promise.all([loadFieldSelector(token), loadStaffSelector(token)])
+        .then(() => {
+            getAllEquipment(token);
+        })
+        .catch((error) => {
+            console.error("Error initializing selectors:", error);
+        });
+
+    const searchBar = document.getElementById("equipmentSearch");
+    searchBar.addEventListener("input", (event) => {
+        const searchTerm = event.target.value.toLowerCase();
+        const filteredEquipment = equipmentData.filter(equipment =>
+            equipment.name.toLowerCase().includes(searchTerm)
+        );
+        renderEquipment(filteredEquipment);
+    });
 });
+
+
 const ajaxRequest = (url, method, data, token, successCallback, errorCallback) => {
     $.ajax({
         url,
@@ -21,51 +38,74 @@ const ajaxRequest = (url, method, data, token, successCallback, errorCallback) =
     });
 };
 const loadFieldSelector = (token) => {
-    const fieldSelector = document.getElementById('equipmentField');
-    fieldSelector.innerHTML = ''; // Clear existing options
-    ajaxRequest(
-        "http://localhost:8089/gs/api/v1/fields",
-        "GET",
-        null,
-        token,
-        (data) => {
-            data.forEach(field => {
-                const option = document.createElement('option');
-                option.value = field.fieldCode;
-                option.textContent = field.fieldName;
-                fieldSelector.appendChild(option);
-            });
+    return new Promise((resolve, reject) => {
+        const fieldSelector = document.getElementById('equipmentField');
+        fieldSelector.innerHTML = ''; // Clear existing options
+        ajaxRequest(
+            "http://localhost:8089/gs/api/v1/fields",
+            "GET",
+            null,
+            token,
+            (data) => {
+                data.forEach(field => {
+                    const option = document.createElement('option');
+                    option.value = field.fieldCode;
+                    option.textContent = field.fieldName;
+                    fieldSelector.appendChild(option);
 
-
-        },
-        (error) => {
-            console.error("Error loading fields:", error);
-            showNotification("Failed to load fields", "error");
-        }
-    );
+                    fieldMap[field.fieldCode] = field.fieldName;
+                });
+                resolve();
+            },
+            (error) => {
+                console.error("Error loading fields:", error);
+                showNotification("Failed to load fields", "error");
+                reject(error);
+            }
+        );
+    });
 };
+
 const loadStaffSelector = (token) => {
-    const staffSelector = document.getElementById("equipmentStaff");
-    staffSelector.innerHTML = ''; // Clear existing options
-    ajaxRequest(
-        "http://localhost:8089/gs/api/v1/staff",
-        "GET",
-        null,
-        token,
-        (data) => {
-            data.forEach(staff => {
-                const option = document.createElement("option");
-                option.value = staff.id;
-                option.textContent = `${staff.firstName} ${staff.lastName}`;
-                staffSelector.appendChild(option);
-            });
-        },
-        (error) => {
-            console.error("Error loading staff:", error);
-            showNotification("Failed to load staff", "error");
-        }
-    );
+    return new Promise((resolve, reject) => {
+        const staffSelector = document.getElementById("equipmentStaff");
+        staffSelector.innerHTML = ''; // Clear existing options
+        ajaxRequest(
+            "http://localhost:8089/gs/api/v1/staff",
+            "GET",
+            null,
+            token,
+            (data) => {
+                data.forEach(staff => {
+                    const option = document.createElement("option");
+                    option.value = staff.id;
+                    option.textContent = `${staff.firstName} ${staff.lastName}`;
+                    staffSelector.appendChild(option);
+
+                    staffMap[staff.id] = `${staff.firstName} ${staff.lastName}`;
+                });
+                resolve();
+            },
+            (error) => {
+                console.error("Error loading staff:", error);
+                showNotification("Failed to load staff", "error");
+                reject(error);
+            }
+        );
+    });
 };
+
+const getFieldName = (fieldCode) => {
+    if (fieldMap[fieldCode]) {
+        return fieldMap[fieldCode];
+    }
+};
+
+const getStaffName = (staffId) => {
+    if (staffMap[staffId]) {
+        return staffMap[staffId];
+    }
+}
 function openEquipmentModal(equipment = null) {
     document.getElementById("equipmentModal").style.display = "block";
 
@@ -170,6 +210,24 @@ function updateEquipment(token) {
         }
     );
 }
+function deleteEquipment(equipmentId) {
+    const token = getCookie('token');
+    ajaxRequest(
+        `http://localhost:8089/gs/api/v1/equipments/${equipmentId}`,
+        "DELETE",
+        null,
+        token,
+        (response) => {
+            showNotification("Equipment deleted successfully!", "success");
+            getAllEquipment(token);
+        },
+        (error) => {
+            console.error(error.responseText);
+            showNotification(error.responseText);
+        }
+    );
+}
+
 const renderEquipment = (filteredEquipmentData = [] = equipmentData) => {
     const equipmentTableBody = document.getElementById("equipmentTableBody");
     equipmentTableBody.innerHTML = "";
@@ -184,22 +242,34 @@ const renderEquipment = (filteredEquipmentData = [] = equipmentData) => {
         equipmentTableBody.appendChild(row);
         return;
     }
-    equipmentData.forEach((equipment) => {
+    filteredEquipmentData.forEach(equipment => {
+        const fieldName = getFieldName(equipment.fieldCode);
+        const staffName = getStaffName(equipment.staffId);
         const row = document.createElement("tr");
         row.innerHTML = `
-            <td>${equipment.equipmentId}</td>
+            <td title="${equipment.equipmentId}">${getfriendlyEquipmentId(equipment.equipmentId)}</td>
             <td>${equipment.name}</td>
             <td>${equipment.equipmentType}</td>
             <td>${equipment.status}</td>
-            <td>${equipment.fieldCode}</td>
-            <td>${equipment.staffId}</td>
+            <td>${fieldName}</td>
+            <td>${staffName}</td>
             <td>
                <button onclick="openEquipmentModal(${JSON.stringify(equipment).replace(/"/g, '&quot;')})" class="edit-btn" title="Edit">
                     <i class="fas fa-edit"></i>
                 </button>
-    
+               <button onclick="deleteEquipment('${equipment.equipmentId}')" class="delete-btn" title="Delete">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
             </td>
         `;
         equipmentTableBody.appendChild(row);
     });
 };
+function getfriendlyEquipmentId(equipmentId) {
+    const parts = equipmentId.split('-');
+    const prefix = parts[0];
+    const shortUUID = parts[1].substring(0, 6);
+    return `${prefix} (${shortUUID})`;
+
+}
+

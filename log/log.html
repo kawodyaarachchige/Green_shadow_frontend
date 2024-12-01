@@ -46,9 +46,13 @@
                 <i class="fas fa-truck"></i>
                 <span>Vehicles</span>
             </a>
-            <a href="#" class="nav-item active" data-section="logs">
+            <a href="../log/log.html" class="nav-item active" data-section="logs">
                 <i class="fas fa-clipboard-list"></i>
                 <span>Logs</span>
+            </a>
+            <a href="../setting/setting.html" class="nav-item" data-section="settings">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
             </a>
         </nav>
         <a href="../index.html">
@@ -57,12 +61,7 @@
                 <span>Logout</span>
             </button>
         </a>
-        <button class="setting-btn">
-            <i class="fas fa-cog"></i>
-            <span>Settings</span>
-        </button>
     </aside>
-    <!-- Main Content -->
     <main class="main-content">
         <div class="header">
             <h1>Log Management</h1>
@@ -70,16 +69,12 @@
                 <i class="fas fa-plus"></i> New Log
             </button>
         </div>
-
-        <!-- Search and Filter Section -->
         <div class="filter-section">
             <!-- Search Bar -->
             <div class="search-bar">
                 <i class="fas fa-search"></i>
                 <input type="text" id="searchInput" placeholder="Search logs...">
             </div>
-
-            <!-- Date Range Filter -->
             <div class="date-filter">
                 <div class="date-input">
                     <label for="startDate">From:</label>
@@ -97,8 +92,6 @@
                 </button>
             </div>
         </div>
-
-        <!-- Logs Table -->
         <div class="table-container">
             <table>
                 <thead>
@@ -114,8 +107,6 @@
             </table>
         </div>
     </main>
-
-    <!-- Log Modal -->
     <div id="logModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -141,15 +132,13 @@
             </form>
         </div>
     </div>
-
-    <!-- Image Upload Modal -->
     <div id="imageModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
                 <h2>Upload Image</h2>
                 <button class="close-btn" onclick="closeImageModal()">×</button>
             </div>
-            <form id="imageForm" >
+            <form id="imageForm">
                 <div class="form-group">
                     <label>Log ID</label>
                     <input type="text" id="logId-2" disabled placeholder="Auto-generated">

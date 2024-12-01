@@ -3,32 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta  name="description" content="Green Shadow - crop monitoring system">
-    <meta  name="author" content="Tharu Arachchige">
+    <meta name="description" content="Green Shadow - crop monitoring system">
+    <meta name="author" content="Tharu Arachchige">
     <title>Dashboard</title>
     <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 <div class="app-container">
-    <!-- Mobile Menu Toggle -->
     <button id="menuToggle" class="menu-toggle">
         <i class="fas fa-bars"></i>
     </button>
-
-    <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <img src="../assets/image/logo.png" alt="Logo" class="logo">
             <h1>Green Shadow</h1>
         </div>
-
         <nav class="sidebar-nav">
             <a href="dashboard.html" class="nav-item active" data-section="dashboard">
                 <i class="fas fa-home"></i>
                 <span>Dashboard</span>
             </a>
-
             <a href="../field/field.html" class="nav-item" data-section="fields">
                 <i class="fas fa-map-marked-alt"></i>
                 <span>Fields</span>
@@ -53,17 +48,18 @@
                 <i class="fas fa-clipboard-list"></i>
                 <span>Logs</span>
             </a>
+            <a href="../setting/setting.html" class="nav-item" data-section="settings">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </a>
         </nav>
-        <button class="logout-btn">
+        <button class="logout-btn" >
             <i class="fas fa-sign-out-alt"></i>
             <span>Logout</span>
         </button>
-        <button class="setting-btn">
-            <i class="fas fa-cog"></i>
-            <span>Settings</span>
-        </button>
-    </aside>
 
+
+    </aside>
     <!-- Main Content -->
     <main class="main-content">
         <header class="top-bar">
@@ -79,11 +75,10 @@
                 </button>
                 <div class="user-profile">
                     <img src="../assets/image/User.png" alt="User">
-                    <span>Tharushi</span>
+                    <span id="logUser"></span>
                 </div>
             </div>
         </header>
-
         <div class="dashboard-content">
             <!-- Weather Stats -->
             <div class="stats-grid">
@@ -112,7 +107,6 @@
                     </div>
                 </div>
             </div>
-
             <!-- Crop Progress -->
             <div class="crop-progress">
                 <h2>Crop Progress</h2>
@@ -155,7 +149,6 @@
                     </div>
                 </div>
             </div>
-
             <!-- Field Map -->
             <div class="field-map-container">
                 <div class="field-header">
@@ -166,12 +159,61 @@
                     </button>
                 </div>
                 <div class="field-map">
-                    <canvas id="fieldMap"></canvas>
+
+
+
+
+
+
+
+                    <!--    <div id="cropAnalyticsChart"></div>-->
+                    <!--<div class="activity-logs">
+                        <h2>Recent Activities</h2>
+                        <ul id="activityLogs"></ul>
+                    </div>-->
+
+
+                    <!--<div class="chart-container">
+                        <canvas id="temperatureChart"></canvas>
+                    </div>-->
                 </div>
             </div>
         </div>
     </main>
 </div>
 <script src="../script.js"></script>
+
+<!--<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>-->
+<!--<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>-->
+<!--<script>
+    const tempCtx = document.getElementById('temperatureChart').getContext('2d');
+
+    const temperatureChart = new Chart(tempCtx, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'], // X-axis labels
+            datasets: [{
+                label: 'Temperature (°C)',
+                data: [22, 25, 24, 26, 27],
+                borderColor: 'rgba(255, 99, 132, 1)',
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>-->
+<script>
+    document.getElementById('logUser').innerText = getCookie("userGreenShadow");
+
+
+</script>
 </body>
 </html>

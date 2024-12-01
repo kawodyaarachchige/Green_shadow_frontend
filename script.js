@@ -7,16 +7,18 @@ document.getElementById('menuToggle').addEventListener('click', toggleSidebar);
 logoutBtn.addEventListener('click', handleLogout);
 navItems.forEach(item => item.addEventListener('click', handleNavItemClick));
 
+
 // Toggle sidebar visibility
 function toggleSidebar() {
     sidebar.classList.toggle('active');
 }
 
 // Handle logout action
-function handleLogout() {
+ function handleLogout() {
     if (confirm('Are you sure you want to logout?')) {
         console.log('Logging out...');
         document.cookie='token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        document.cookie='userGreenShadow=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
         window.location.href = '../index.html';
     }
 }
@@ -51,7 +53,10 @@ function updateDateTime() {
     setTimeout(updateDateTime, 1000);
 }
 
-document.addEventListener("DOMContentLoaded", updateDateTime);
+document.addEventListener("DOMContentLoaded", () => {
+    updateDateTime();
+
+})
 
 // Display notification
 function showNotification(message, type = 'info') {
@@ -90,3 +95,29 @@ function getCookie(name) {
     const parts = value.split(`; ${name}=`);
     return parts.length === 2 ? parts.pop().split(';').shift() : null;
 }
+/*const apiKey = '5c2b4c4b0a0d4d5c2b4c4b0a0d4d5c2b';
+const city = 'Colombo'; // Replace with your location
+
+fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`)
+    .then(response => response.json())
+    .then(data => {
+        const weatherDetails = `
+            <p>Temperature: ${data.main.temp}°C</p>
+            <p>Humidity: ${data.main.humidity}%</p>
+            <p>Weather: ${data.weather[0].description}</p>
+        `;
+        document.getElementById('weatherDetails').innerHTML = weatherDetails;
+    });*/
+/*const activityLogs = document.getElementById('activityLogs');
+const logActivity = (activity) => {
+    const logItem = document.createElement('li');
+    logItem.textContent = activity;
+    activityLogs.appendChild(logItem);
+};
+
+// Example usage:
+logActivity('Added a new crop: Rice');
+logActivity('Updated soil moisture for Field 1');*/
+
+
+

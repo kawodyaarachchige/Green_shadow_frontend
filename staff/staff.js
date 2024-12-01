@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const token = getCookie("token");
     const userLoggedIn = getCookie("user");
     loadStaffTable(token)
+    loadFieldSelector(token);
 
     loadLogSelector(token);
 
@@ -45,6 +46,28 @@ const loadLogSelector = (token) => {
         }
     });
 }
+const loadFieldSelector = (token) => {
+    const fieldSelector = document.getElementById("fieldIdOnStaff");
+    $.ajax({
+        url: "http://localhost:8089/gs/api/v1/fields",
+        type: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        },
+        success: (data) => {
+            data.forEach((field) => {
+                const option = document.createElement("option");
+                option.value = field.fieldCode;
+                option.textContent = field.fieldName;
+                fieldSelector.appendChild(option);
+            });
+        },
+        error: (error) => {
+            console.log("Something went wrong:", error);
+        }
+    });
+}
 const saveNewStaff = (token) => {
 
     const firstName = document.getElementById("firstName").value;
@@ -62,6 +85,7 @@ const saveNewStaff = (token) => {
     const email = document.getElementById("email").value;
     const role = document.getElementById("role").value;
     const logCode = document.getElementById("logIdStaff").value;
+    const fieldCode = document.getElementById("fieldIdOnStaff").value;
     if (!firstName || !lastName || !designation || !gender || !joinedDate || !dob || !addressLine1 || !addressLine2 || !addressLine3 || !addressLine4 || !addressLine5 || !contactNumber || !email || !role) {
         showNotification("Please fill in all required fields", "error");
     }
@@ -93,7 +117,8 @@ const saveNewStaff = (token) => {
             "Authorization": `Bearer ${token}`
         },
         data: JSON.stringify(staffModel),
-        success: (data) => {
+        success: (response) => {
+            assignFieldToStaff(response.staffId,fieldCode, token)
             showNotification("Staff member saved successfully", "success");
             closeStaffModal();
             loadStaffTable(token);
@@ -103,6 +128,32 @@ const saveNewStaff = (token) => {
             console.log("Something went wrong:", error.responseText);
         }
     });
+}
+const assignFieldToStaff = (staffId, fieldCode, token) => {
+    const asignnedField = document.getElementById("fieldIdOnStaff").value;
+    if(asignnedField){
+       const formData = new FormData();
+        formData.append("staffId", staffId);
+        formData.append("fieldCode", fieldCode);
+
+        $.ajax({
+            url: `http://localhost:8089/gs/api/v1/staff`,
+            type: "POST",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            },
+            contentType: false,
+            processData: false,
+            data: formData,
+            success: () => {
+                console.log("Field assigned successfully");
+            },
+            error: (error) => {
+                showNotification(error.responseText);
+                console.log("Something went wrong:", error.responseText);
+            }
+        });
+    }
 }
 const updateStaff = (token) => {
     const staffId = document.getElementById("staffId").value;
@@ -121,7 +172,7 @@ const updateStaff = (token) => {
     const email = document.getElementById("email").value;
     const role = document.getElementById("role").value;
     const logCode = document.getElementById("logIdStaff").value;
-
+    const fieldCode = document.getElementById("fieldIdOnStaff").value;
     if (!firstName || !lastName || !designation || !gender || !joinedDate || !dob || !addressLine1 || !addressLine2 || !addressLine3 || !addressLine4 || !addressLine5 || !contactNumber || !email || !role) {
         showNotification("Please fill in all required fields", "info");
 
@@ -151,6 +202,7 @@ const updateStaff = (token) => {
             logCode
         }),
         success: (data) => {
+            assignFieldToStaff(staffId,fieldCode, token);
             showNotification("Staff member updated successfully", "success");
             closeStaffModal();
             loadStaffTable(token);

@@ -1,28 +1,129 @@
-// Settings Management JavaScript
+document.addEventListener("DOMContentLoaded", () => {
+    const token = getCookie('token');
+    setupPasswordToggles();
 
-// Mock user data
-let currentUser = {
-    email: 'user@example.com',
-    role: 'MANAGER',
-    roleCode: 'MGR001'
+    const btnChangeRole = document.getElementById("btn-change-role");
+    if (btnChangeRole) {
+        btnChangeRole.addEventListener("click", () => changeRole(token));
+    }
+    const btnChangePassword = document.getElementById("btn-change-password");
+    if (btnChangePassword) {
+        btnChangePassword.addEventListener("click", () => changePassword(token));
+    }
+    const btnDeleteAccount = document.getElementById("btn-delete-account");
+    if (btnDeleteAccount) {
+        btnDeleteAccount.addEventListener("click", () => deleteAccount(token));
+    }
+})
+
+
+const ajaxRequest = (url, method, data, token, successCallback, errorCallback) => {
+    $.ajax({
+        url,
+        type: method,
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        },
+        data: data ? JSON.stringify(data) : null,
+        success: successCallback,
+        error: errorCallback
+    });
 };
 
-// DOM Elements
-document.addEventListener('DOMContentLoaded', () => {
-    initializeSettings();
-    setupPasswordToggles();
-    setupFormListeners();
-});
+const changeRole = (token) => {
+    const email = getCookie('userGreenShadow');
+    const password = document.getElementById("passwordForRoleChange").value;
+    const role = document.getElementById('roleForSettings').value;
+    const roleClarificationCode = document.getElementById("roleCode").value;
 
-// Initialize settings
-function initializeSettings() {
-    // Populate form fields with current user data
-    document.getElementById('emailForSettings').value = currentUser.email;
-    document.getElementById('roleForSettings').value = currentUser.role;
-    document.getElementById('roleCode').value = currentUser.roleCode;
+    if(!password || !role || !roleClarificationCode){
+        showNotification('Please fill in all required fields', 'error');
+        return;
+    }
+
+
+    ajaxRequest(
+        'http://localhost:8089/gs/api/v1/users/role',
+        'PUT',
+        {
+            email: email,
+            password: password,
+            role: role,
+            roleClarificationCode: roleClarificationCode
+        },
+        token,
+        (response) => {
+            showNotification('Profile updated successfully', 'success');
+            logoutAuto();
+        },
+        (error) => {
+            showNotification('Password is incorrect', 'error');
+            console.log(error.responseText);
+        }
+    );
+
 }
+const changePassword = (token) => {
+    const email = getCookie('userGreenShadow');
+    const password = document.getElementById("currentPassword").value;
+    const newPassword = document.getElementById("newPassword").value;
+    const confirmPassword = document.getElementById("confirmPassword").value;
 
-// Setup password visibility toggles
+    if(!password || !newPassword || !confirmPassword){
+        showNotification('Please fill in all required fields', 'error');
+        return;
+    }
+
+    ajaxRequest(
+        'http://localhost:8089/gs/api/v1/users/password',
+        'PUT',
+        {
+            userDTO:{
+                email: email,
+                password: password
+            },
+            newPassword: confirmPassword
+        },
+        token,
+        (response) => {
+            showNotification('Profile updated successfully', 'success');
+            logoutAuto();
+        },
+        (error) => {
+            showNotification(error.responseText);
+            console.log(error.responseText);
+        }
+    );
+}
+const deleteAccount = (token) => {
+    const email = getCookie('userGreenShadow');
+    const password = document.getElementById("deletePassword").value;
+
+    if(!password){
+        showNotification('Please fill in all required fields', 'error');
+        return;
+    }
+
+    ajaxRequest(
+        'http://localhost:8089/gs/api/v1/users/delete',
+        'DELETE',
+        {
+            email: email,
+            password: password
+        },
+        token,
+        (response) => {
+            showNotification('Account deleted successfully', 'success');
+            logoutAuto();
+        },
+        (error) => {
+            showNotification(error.responseText);
+            console.log(error.responseText);
+        }
+    )
+
+}
 function setupPasswordToggles() {
     document.querySelectorAll('.toggle-password').forEach(icon => {
         icon.addEventListener('click', (e) => {
@@ -35,113 +136,15 @@ function setupPasswordToggles() {
     });
 }
 
-// Setup form listeners
-function setupFormListeners() {
-    // Profile settings form
-    document.getElementById('settings-form').addEventListener('submit', (e) => {
-        e.preventDefault();
-        handleProfileUpdate();
-    });
-
-    // Password change form
-    document.getElementById('change-password-form').addEventListener('submit', (e) => {
-        e.preventDefault();
-        handlePasswordChange();
-    });
-}
-
-// Handle profile update
-function handleProfileUpdate() {
-    const newRole = document.getElementById('roleForSettings').value;
-    const newRoleCode = document.getElementById('roleCode').value;
-
-    // Validate role code format (example: should be 6 characters)
-    if (newRoleCode.length !== 6) {
-        showNotification('Role code must be 6 characters long', 'error');
-        return;
-    }
-
-    // Update user data
-    currentUser.role = newRole;
-    currentUser.roleCode = newRoleCode;
-
-    showNotification('Profile settings updated successfully', 'success');
-}
-
-// Handle password change
-function handlePasswordChange() {
-    const currentPassword = document.getElementById('currentPassword').value;
-    const newPassword = document.getElementById('newPassword').value;
-    const confirmPassword = document.getElementById('confirmPassword').value;
-
-    // Validate password requirements
-    if (newPassword.length < 8) {
-        showNotification('Password must be at least 8 characters long', 'error');
-        return;
-    }
-
-    if (newPassword !== confirmPassword) {
-        showNotification('New passwords do not match', 'error');
-        return;
-    }
-
-    // In a real application, you would verify the current password
-    // and make an API call to update the password
-
-    showNotification('Password updated successfully', 'success');
-    document.getElementById('change-password-form').reset();
-}
-
-// Confirm account deletion
 function confirmDeleteAccount() {
-    const password = document.getElementById('deletePassword').value;
-
-    if (!password) {
-        showNotification('Please enter your password to confirm deletion', 'error');
-        return;
+    const confirmation = confirm("Are you sure you want to delete your account? This action cannot be undone.");
+    if (confirmation) {
+        deleteAccount(token);
     }
-
-    const modal = document.getElementById('confirmModal');
-    const message = document.getElementById('confirmMessage');
-    message.textContent = 'Are you sure you want to delete your account? This action cannot be undone.';
-
-    modal.style.display = 'block';
-
-    // Handle confirmation
-    document.getElementById('confirmYes').onclick = () => {
-        // In a real application, you would verify the password
-        // and make an API call to delete the account
-        showNotification('Account deleted successfully', 'success');
-        modal.style.display = 'none';
-        // Redirect to login page
-        setTimeout(() => {
-            window.location.href = '../index.html';
-        }, 2000);
-    };
-
-    document.getElementById('confirmNo').onclick = () => {
-        modal.style.display = 'none';
-    };
-
-    document.querySelector('#confirmModal .close-btn').onclick = () => {
-        modal.style.display = 'none';
-    };
 }
 
-// Show notification
-function showNotification(message, type = 'success') {
-    const notification = document.createElement('div');
-    notification.className = `notification ${type}`;
-    notification.textContent = message;
-
-    document.body.appendChild(notification);
-
-    setTimeout(() => {
-        notification.remove();
-    }, 3000);
+function logoutAuto(){
+    document.cookie='token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    document.cookie='userGreenShadow=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    window.location.href = '../index.html';
 }
-
-// Handle menu toggle
-document.getElementById('menuToggle').addEventListener('click', () => {
-    document.getElementById('sidebar').classList.toggle('active');
-});
