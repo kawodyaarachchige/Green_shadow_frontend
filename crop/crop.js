@@ -139,8 +139,8 @@ const saveNewCrop = (token) => {
 
         },
         (error) => {
-            console.error('Error saving crop:', error);
-            showNotification('Failed to save crop', 'error');
+            console.error('Error saving crop:', error.responseText);
+            showNotification(error.responseText);
         }
     );
 };
@@ -167,8 +167,8 @@ const updateCrop = (token) => {
             closeCropModal();
         },
         (error) => {
-            console.error('Error updating crop:', error);
-            showNotification('Failed to update crop', 'error');
+            console.error('Error updating crop:', error.responseText);
+            showNotification(error.responseText);
         }
     );
 };
@@ -192,7 +192,8 @@ const uploadImage = (token, cropCode) => {
             showNotification('Image uploaded successfully!', 'success');
         },
         error: (error) => {
-            console.error('Error uploading image:', error);
+            console.error('Error uploading image:', error.responseText);
+            showNotification(error.responseText);
         }
     })
 };

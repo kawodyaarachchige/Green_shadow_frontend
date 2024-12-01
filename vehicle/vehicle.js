@@ -86,8 +86,8 @@ const saveNewVehicle = (token) => {
             loadVehicleTable(token);
         },
         (error) => {
-            showNotification("Vehicle could not be saved", "error");
-            console.error("Error saving vehicle:", error);
+            showNotification(error.responseText);
+            console.error("Error saving vehicle:", error.responseText);
         }
     );
 };
@@ -112,8 +112,8 @@ const updateVehicle = (token) => {
             loadVehicleTable(token);
         },
         (error) => {
-            showNotification("Vehicle could not be updated", "error");
-            console.error("Error updating vehicle:", error);
+            showNotification(error.responseText);
+            console.error("Error updating vehicle:", error.responseText);
         }
     );
 };

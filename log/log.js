@@ -155,7 +155,10 @@ function uploadImage(token) {
             closeModal('imageModal');
             loadTable(token);
         },
-        error: () => showNotification("Something went wrong, image not uploaded", "error"),
+        error: (error) => {
+            console.error("Error:", error.responseText);
+            showNotification(error.responseText);
+        },
     });
 }
 
@@ -232,9 +235,13 @@ function sendRequest(method, url, token, data, successCallback) {
         },
         data: data ? JSON.stringify(data) : undefined,
         success: successCallback,
-        error: () => showNotification("Something went wrong!", "error"),
+        error: (error) => {
+            console.error("Error:", error.responseText);
+            showNotification(error.responseText);
+        },
     });
 }
+
 
 function formatDate(date) {
     return date.toISOString().split("T")[0];

@@ -99,8 +99,8 @@ const saveNewStaff = (token) => {
             loadStaffTable(token);
         },
         error: (error) => {
-            showNotification("Staff member could not be saved", "error");
-            console.log("Something went wrong:", error);
+            showNotification(error.responseText);
+            console.log("Something went wrong:", error.responseText);
         }
     });
 }
@@ -156,8 +156,8 @@ const updateStaff = (token) => {
             loadStaffTable(token);
         },
         error: (error) => {
-            showNotification("Staff member could not be updated", "error");
-            console.log("Something went wrong:", error);
+            showNotification(error.responseText);
+            console.log("Something went wrong:", error.responseText);
         }
     });
 }
@@ -257,8 +257,8 @@ function deleteStaff(staffId) {
             loadStaffTable(token);
         },
         error: (error) => {
-            showNotification("Something went wrong, staff member could not be deleted", "error");
-            console.log("Something went wrong:", error);
+            showNotification(error.responseText);
+            console.log("Something went wrong:", error.responseText);
         }
     });
 }
@@ -337,41 +337,6 @@ const clearFields = () => {
     document.getElementById("logIdStaff").value = "";
 }
 
-const getValues = () => {
-    const firstName = document.getElementById("firstName").value;
-    const lastName = document.getElementById("lastName").value;
-    const designation = document.getElementById("designation").value;
-    const gender = document.getElementById("gender").value;
-    const joinDate = document.getElementById("joinDate").value;
-    const dob = document.getElementById("dob").value;
-    const addressLine1 = document.getElementById("addressLine1").value;
-    const addressLine2 = document.getElementById("addressLine2").value;
-    const addressLine3 = document.getElementById("addressLine3").value;
-    const addressLine4 = document.getElementById("addressLine4").value;
-    const addressLine5 = document.getElementById("addressLine5").value;
-    const contactNumber = document.getElementById("contactNumber").value;
-    const email = document.getElementById("email").value;
-    const role = document.getElementById("role").value;
-    const logCode = document.getElementById("logIdStaff").value;
-
-    return {
-        firstName,
-        lastName,
-        designation,
-        gender,
-        joinDate,
-        dob,
-        addressLine1,
-        addressLine2,
-        addressLine3,
-        addressLine4,
-        addressLine5,
-        contactNumber,
-        email,
-        role,
-        logCode
-    };
-}
 
 function getFriendlyStaffId(staffId) {
     const parts = staffId.split('-');
