@@ -231,6 +231,10 @@ function deleteEquipment(equipmentId) {
 const renderEquipment = (filteredEquipmentData = [] = equipmentData) => {
     const equipmentTableBody = document.getElementById("equipmentTableBody");
     equipmentTableBody.innerHTML = "";
+
+    $('.equipment-table').DataTable().destroy();
+    $('#equipmentTableBody').empty()
+
     if(!filteredEquipmentData.length){
         const row = document.createElement("tr");
         row.innerHTML = `
@@ -264,7 +268,18 @@ const renderEquipment = (filteredEquipmentData = [] = equipmentData) => {
         `;
         equipmentTableBody.appendChild(row);
     });
-};
+    new DataTable('.equipment-table', {
+        paging: false,
+        searching: true,
+        pageLength: 10,
+        lengthMenu: [10, 25, 50, 100],
+        responsive: true,
+        destroy: true
+
+    })
+
+
+}
 function getfriendlyEquipmentId(equipmentId) {
     const parts = equipmentId.split('-');
     const prefix = parts[0];

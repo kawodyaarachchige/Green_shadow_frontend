@@ -1,5 +1,3 @@
-let logCounter = 1;
-const logIdMap = new Map();
 
 document.addEventListener('DOMContentLoaded', function () {
     initializeApp();
@@ -8,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
 function initializeApp() {
     setDefaultDates();
     const token = getCookie("token");
-    const userLoggedIn = getCookie("user");
+    const userLoggedIn = getCookie("userGreenShadow");
     console.log(userLoggedIn, token);
 
     loadTable(token);
@@ -164,11 +162,23 @@ function uploadImage(token) {
 
 function loadTable(token) {
     clearTable();
+    $('.log-table').DataTable().destroy();
+    $('#logsTableBody').empty();
     sendRequest("GET", "http://localhost:8089/gs/api/v1/logs", token, null, (data) => {
         const logTable = document.getElementById("logsTableBody");
         data.sort((a, b) => new Date(a.logDate) - new Date(b.logDate))
             .forEach((log) => logTable.appendChild(createLogRow(log)));
     });
+    new DataTable('.field-table', {
+        paging: false,
+        searching: true,
+        pageLength: 10,
+        lengthMenu: [10, 25, 50, 100],
+        responsive: true,
+        destroy: true
+
+    })
+
 }
 
 function filterByDates(token) {

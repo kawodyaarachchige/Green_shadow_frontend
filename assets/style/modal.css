@@ -4,6 +4,11 @@
     align-items: center;
     margin-bottom: 20px;
 }
+
+.dt-search{
+    display: none;
+}
+
 .modal {
     display: none;
     position: fixed;

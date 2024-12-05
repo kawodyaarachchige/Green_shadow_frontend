@@ -79,17 +79,23 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+
+
         const user = JSON.stringify({ email, password });
+
 
         $.ajax({
             url: 'http://localhost:8089/gs/api/v1/users/login',
             type: 'POST',
             data: user,
             contentType: 'application/json',
-            success: (response) => {
+            success: async (response) => {
                 document.cookie = `token=${response.token}; path=/; secure;`;
                 document.cookie = `userGreenShadow=${email}; path=/; secure;`;
-                window.location.href = 'dashboard/dashboard.html';
+
+                await getUserRole(user);
+
+
             },
             error: (xhr) => {
                 console.error('Login error:', xhr.responseText);
@@ -98,6 +104,32 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    function getUserRole(user) {
+        //const token = document.cookie.split(';').find(row => row.trim().startsWith('token=')).split('=')[1];
+        const token = getCookie('token');
+        console.log("token : "+token)
+        console.log("user : "+user)
+        $.ajax({
+            url: `http://localhost:8089/gs/api/v1/users/get-role`,
+            type: 'PUT',
+            data: user,
+            contentType: 'application/json',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: (response) => {
+                const role = response.role;
+                console.log(role)
+                document.cookie = `role=${role}; path=/; secure;`;
+
+                window.location.href = 'dashboard/dashboard.html';
+            },
+            error: (xhr) => {
+                console.error('Login error:', xhr.responseText);
+                alert('Login failed. Please check your credentials.');
+            }
+        });
+    }
     /**
      * Handles signup form submission.
      */
@@ -139,9 +171,9 @@ document.addEventListener('DOMContentLoaded', () => {
             data: user,
             contentType: 'application/json',
             success: (response) => {
-                document.cookie = `token=${response.token}`;
-                localStorage.setItem('token', response.token);
-                localStorage.setItem('user', email);
+                //document.cookie = `token=${response.token}`;
+               /* localStorage.setItem('token', response.token);
+                localStorage.setItem('user', email);*/
                 window.location.href = 'index.html';
             },
             error: (xhr) => {
@@ -164,3 +196,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    return parts.length === 2 ? parts.pop().split(';').shift() : null;
+}

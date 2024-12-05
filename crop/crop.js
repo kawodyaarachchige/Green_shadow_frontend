@@ -183,6 +183,7 @@ const saveLogForCrop = (token,cropCode) => {
            processData: false,
            data: formData,
            success: () => {
+               getAllCrops(token);
                console.log("Log saved successfully");
            },
            error: (error) => {
@@ -207,12 +208,12 @@ const updateCrop = (token) => {
         "PUT",
         cropData,
         token,
-        () => {
-            uploadImage(token, cropCode);
-            saveLogForCrop(token,cropCode);
+        async () => {
+            await uploadImage(token, cropCode);
+            saveLogForCrop(token, cropCode);
             showNotification('Crop updated successfully!', 'success');
+            console.log("token : ", token);
             getAllCrops(token);
-            // renderCrops(token);
             closeCropModal();
         },
         (error) => {
@@ -222,7 +223,7 @@ const updateCrop = (token) => {
     );
 };
 
-const uploadImage = (token, cropCode) => {
+const uploadImage =  (token, cropCode) => {
     const imageInput = document.getElementById('cropImage');
     const formData = new FormData();
     formData.append('cropCode', cropCode);
@@ -266,6 +267,8 @@ const getAllCrops = (token) => {
 const renderCrops = (filteredCrops = [] = cropsData) => {
     const tableBody = document.getElementById('cropTableBody');
     tableBody.innerHTML = '';
+    $('.crop-table').DataTable().destroy();
+    $('#cropTableBody').empty();
     if (!filteredCrops.length) {
         const emptyRow = document.createElement('tr');
         emptyRow.innerHTML = `
@@ -302,6 +305,15 @@ const renderCrops = (filteredCrops = [] = cropsData) => {
     `;
         tableBody.appendChild(row);
     });
+    new DataTable('.crop-table', {
+        paging: false,
+        searching: true,
+        pageLength: 10,
+        lengthMenu: [10, 25, 50, 100],
+        responsive: true,
+        destroy: true
+
+    })
 
 };
 
@@ -324,6 +336,7 @@ function initializeCropSearchBar() {
 function viewCropDetails(cropCode) {
     console.log(cropCode);
     const crop = cropsData.find(crop => crop.cropCode === cropCode);
+
     if (crop) {
         document.getElementById('viewCropId').textContent = crop.cropCode;
         document.getElementById('viewSpecialName').textContent = crop.cropScientificName;
@@ -334,16 +347,20 @@ function viewCropDetails(cropCode) {
 
         const imagePreview = document.getElementById('viewCropImage');
         if (crop.cropImage) {
+            imagePreview.src = '';
             imagePreview.src = `data:image/jpeg;base64,${crop.cropImage}`;
             imagePreview.style.display = 'block';
         } else {
-            imagePreview.src = ''; // Clear the src if no image is available
+            imagePreview.src = '';
             imagePreview.style.display = 'none';
         }
 
         document.getElementById('viewCropModal').style.display = 'block';
+    } else {
+        console.error('Crop not found for the given cropCode:', cropCode);
     }
 }
+
 
 
 function closeViewCropModal() {

@@ -51,6 +51,7 @@ function clearMarker() {
 
 function previewImage1(event) {
     const preview = document.getElementById('imagePreview1');
+    preview.src = '';
     const file = event.target.files[0];
 
     if (file) {
@@ -65,6 +66,7 @@ function previewImage1(event) {
 
 function previewImage2(event) {
     const preview = document.getElementById('imagePreview2');
+    preview.src = '';
     const file = event.target.files[0];
 
     if (file) {
@@ -85,8 +87,6 @@ function clearImagePreviews() {
     preview1.style.display = 'none';
     preview2.style.display = 'none';
 }
-
-// API Functions
 const loadLogSelector = (token) => {
     $.ajax({
         url: "http://localhost:8089/gs/api/v1/logs",
@@ -125,13 +125,17 @@ function handleFieldFormSubmit(event) {
         },
         extentSizeOfField: document.getElementById('fieldSize').value,
         logCode: document.getElementById('fieldLog').value,
-        fieldImage: document.getElementById('fieldImage').value,
-        fieldImage2:document.getElementById('fieldImage2').value
+        fieldImage: document.getElementById('fieldImage').files[0],
+        fieldImage2:document.getElementById('fieldImage2').files[0]
     };
 
 
     if (!fieldData.fieldName  || !fieldData.extentSizeOfField || !fieldData.logCode) {
         showNotification('Please fill in all required fields', 'error');
+        return;
+    }
+    if(fieldImage.value === "" && fieldImage2.value === ""){
+        showNotification('Please upload at least one image', 'error');
         return;
     }
 
@@ -145,6 +149,8 @@ function handleFieldFormSubmit(event) {
 }
 
 function saveField(token, fieldData) {
+    console.log("token", token, "\nfieldData", fieldData);
+
     const valuesFromForm = getValuesFromForm();
 
     $.ajax({
@@ -170,6 +176,7 @@ function saveField(token, fieldData) {
 }
 
 function updateField(token, fieldCode, fieldData) {
+    console.log("token", token, "\nfieldCode", fieldCode, "\nfieldData", fieldData);
     $.ajax({
         url: `http://localhost:8089/gs/api/v1/fields/${fieldCode}`,
         type: "PUT",
@@ -256,6 +263,8 @@ function loadFieldTable(token) {
 function displayFieldData(dataToDisplay = fieldData) {
     const tableBody = document.getElementById('fieldTableBody');
     tableBody.innerHTML = '';
+    $('.field-table').DataTable().destroy();
+    $('#fieldTableBody').empty();
 
     if (dataToDisplay.length === 0) {
         const emptyRow = document.createElement('tr');
@@ -279,6 +288,7 @@ function displayFieldData(dataToDisplay = fieldData) {
             <td>${field.extentSizeOfField}</td>
            <td title="${field.logCode}">${getFriendlyLogId(field.logCode)}</td>
             <td class="action-buttons">
+          
                 <button class="action-btn view-btn" onclick="viewFieldDetails('${field.fieldCode}')">
                     <i class="fas fa-eye"></i>
                 </button>
@@ -292,6 +302,15 @@ function displayFieldData(dataToDisplay = fieldData) {
         `;
         tableBody.appendChild(row);
     });
+    new DataTable('.field-table', {
+        paging: false,
+        searching: true,
+        pageLength: 10,
+        lengthMenu: [10, 25, 50, 100],
+        responsive: true,
+        destroy: true
+
+    })
 }
 
 function deleteField(fieldCode) {
@@ -327,6 +346,18 @@ function editField(fieldCode) {
         document.getElementById('fieldSize').value = field.extentSizeOfField;
         document.getElementById('fieldLog').value = field.logCode;
         document.getElementById('modalTitle').textContent = 'Edit Field';
+
+        if (field.image1) {
+            const img1 = document.getElementById('imagePreview1');
+            img1.src = `data:image/jpeg;base64,${field.image1}`;
+            img1.style.display = 'block';
+        }
+
+        if (field.image2) {
+            const img2 = document.getElementById('imagePreview2');
+            img2.src = `data:image/jpeg;base64,${field.image2}`;
+            img2.style.display = 'block';
+        }
     }
 }
 

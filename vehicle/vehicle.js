@@ -178,10 +178,30 @@ const displayVehicleData = (dataToDisplay = vehicleData) => {
                 <button class="action-btn edit-btn" onclick="editVehicle(${JSON.stringify(vehicle).replace(/"/g, '&quot;')})">
                     <i class="fas fa-edit"></i>
                 </button>
+                <button class="action-btn delete-btn" onclick="deleteVehicle('${vehicle.vehicleCode}')">
+                    <i class="fas fa-trash"></i>
+                </button>
             </td>
         `;
         tableBody.appendChild(row);
     });
+};
+const deleteVehicle = (vehicleCode) => {
+    const token = getCookie("token");
+    ajaxRequest(
+        `http://localhost:8089/gs/api/v1/vehicles/${vehicleCode}`,
+        "DELETE",
+        null,
+        token,
+        () => {
+            showNotification("Vehicle deleted successfully", "success");
+            loadVehicleTable(token);
+        },
+        (error) => {
+            showNotification(error.responseText);
+            console.error("Error deleting vehicle:", error.responseText);
+        }
+    );
 };
 
 const editVehicle = (vehicle) => {

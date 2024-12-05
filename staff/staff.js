@@ -250,6 +250,9 @@ function displayStaffData(dataToDisplay = staffData) {
     const tableBody = document.getElementById('staffTableBody');
     tableBody.innerHTML = '';
 
+    $('.staff-table').DataTable().destroy();
+    $('#staffTableBody').empty();
+
     if (dataToDisplay.length === 0) {
         const emptyRow = document.createElement('tr');
         emptyRow.innerHTML = `
@@ -293,6 +296,8 @@ function displayStaffData(dataToDisplay = staffData) {
 
         tableBody.appendChild(row);
     });
+
+    new DataTable('.staff-table', {paging: false, pageLength: 10, responsive: true, destroy: true});
 }
 
 function deleteStaff(staffId) {
@@ -396,3 +401,4 @@ function getFriendlyStaffId(staffId) {
     const shortUUID = parts[1].substring(0, 6);
     return `${prefix} (${shortUUID})`;
 }
+
