@@ -34,11 +34,6 @@ A robust and scalable application designed to streamline agricultural management
 
 ---
 
-# Project Title
-
-A brief description of what this project does and who it's for
-
-
 ### Login
 
 ![App Screenshot](https://imgur.com/cwJmNqU.jpg)
