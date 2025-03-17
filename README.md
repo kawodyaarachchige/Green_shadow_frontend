@@ -25,7 +25,7 @@ A robust and scalable application designed to streamline agricultural management
 - **Hibernate**: Easy-to-use ORM for seamless database operations.
 - **MySQL**: Reliable and efficient relational database.
 - **JWT**: Ensures secure authentication and session management.
-- **AJAX/Fetch API**: Enables real-time communication.
+- **AJAX**: Enables real-time communication.
 
 ### **Frontend:**
 - **HTML/CSS/JavaScript**: Clean and responsive interface design.
